@@ -1,6 +1,6 @@
 #some defines about intervals
 
-
+import copy
 from enum import IntEnum
 
 global MAXVALUE
@@ -160,18 +160,44 @@ def intersect_constraint(c1, c2):
     else:
         return Constraint("(0,0)"), False
 
+def unintersect_intervals(intervals):
+    unintersect = []
+    floor_bn = BracketNum('0',Bracket.LC)
+    ceil_bn = BracketNum('+',Bracket.RO)
+    key_bns = []
+    for constraint in intervals:
+        min_bn = constraint.min_bn
+        max_bn = constraint.max_bn
+        if min_bn not in key_bns:
+            key_bns+= [min_bn]
+        if max_bn not in key_bns:
+            key_bns+=[max_bn]
+    key_bnsc = copy.deepcopy(key_bns)
+    for bn in key_bns:
+        bnc = bn.complement()
+        if bnc not in key_bnsc:
+            key_bnsc.append(bnc)
+    if floor_bn not in key_bnsc:
+        key_bnsc.append(floor_bn)
+    if ceil_bn not in key_bnsc:
+        key_bnsc.append(ceil_bn)
+    key_bnsc.sort()
+    for index in range(len(key_bnsc)):
+        if index%2 == 0:
+            temp_constraint = Constraint(key_bnsc[index].getbn()+','+key_bnsc[index+1].getbn())
+            unintersect.append(temp_constraint)
+    return unintersect
+
 def main():
-    c1 = Constraint("[2,3]")
-    c2 = Constraint("[2,3]")
-    c3 = Constraint("(0,1]")
-    c4 = Constraint("(0,0)")
-    print c4.isEmpty()
-    c5 = c1 + c3
-    c6 = c1 + c4
-    print c5.show()
-    print c6.show()
-    c7, isinter = intersect_constraint(c2,c3)
-    print c7.show(), isinter
+    c1 = Constraint("[2,4]")
+    c2 = Constraint("[3,4]")
+    c3 = Constraint("[3,5]")
+    c4 = Constraint("[0,3)")
+    c5 = Constraint("(5,+)")
+    uninter = unintersect_intervals([c1,c2,c3,c4,c5])
+    for c in uninter:
+        print c.show()
+
 
 if __name__=='__main__':
 	main()
