@@ -72,3 +72,18 @@ def nform_union(X, Y):
     new_x2 = unintersect_intervals(new_x2)
     return WNForm(new_x1, new_x2, m)
 
+def main():
+    c1 = Constraint("[2,4]")
+    c2 = Constraint("[3,4]")
+    c3 = Constraint("[3,5]")
+    c4 = Constraint("[0,3)")
+    c5 = Constraint("(5,+)")
+    nf = union_intervals_to_nform([c1,c2,c3,c4])
+    #for c in nf.x1:
+        #print c.show()
+    for c in nf.x2:
+        print c.show()
+    print nf.k, nf.N
+
+if __name__=='__main__':
+	main()

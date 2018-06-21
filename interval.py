@@ -38,6 +38,8 @@ class BracketNum:
                 return True
             else:
                 return False
+    def __ge__(self, bn):
+        return self.__lt__(bn)
     def complement(self):
         if self.value == '+':
             return BracketNum('+', Bracket.RO)  #ceil
@@ -132,7 +134,27 @@ class Constraint:
             return True
         else:
             return False
-        
+    
+    def isininterval(self, num):
+        if self.max_value == '+':
+            return True
+        if num < self.get_min():
+            return False
+        elif num == self.get_min():
+            if self.closed_min == True:
+                return True
+            else:
+                return False
+        elif num > self.get_min() and num < self.get_max():
+            return True
+        elif num == self.get_max():
+            if self.closed_max == True:
+                return True
+            else:
+                return False
+        else:
+            return False
+
     def get_min(self):
         return int(self.min_value)
     
@@ -160,8 +182,8 @@ def intersect_constraint(c1, c2):
     else:
         return Constraint("(0,0)"), False
 
-def unintersect_intervals(intervals):
-    unintersect = []
+def intervals_partition(intervals):
+    partitions = []
     floor_bn = BracketNum('0',Bracket.LC)
     ceil_bn = BracketNum('+',Bracket.RO)
     key_bns = []
@@ -185,19 +207,21 @@ def unintersect_intervals(intervals):
     for index in range(len(key_bnsc)):
         if index%2 == 0:
             temp_constraint = Constraint(key_bnsc[index].getbn()+','+key_bnsc[index+1].getbn())
-            unintersect.append(temp_constraint)
-    return unintersect
-
+            partitions.append(temp_constraint)
+    return partitions, key_bnsc
+        
+    
 def main():
-    c1 = Constraint("[2,4]")
-    c2 = Constraint("[3,4]")
-    c3 = Constraint("[3,5]")
-    c4 = Constraint("[0,3)")
-    c5 = Constraint("(5,+)")
-    uninter = unintersect_intervals([c1,c2,c3,c4,c5])
-    for c in uninter:
+    c1 = Constraint("(2,5)")
+    c2 = Constraint("[3,5)")
+    c3 = Constraint("[6,7)")
+    c4 = Constraint("[7,9]")
+    c5 = Constraint("[8,+)")
+    l = [c2,c1,c5,c4,c3]
+    l.sort()
+    #partitions,_ = intervals_partition()
+    for c in l:
         print c.show()
-
 
 if __name__=='__main__':
 	main()
