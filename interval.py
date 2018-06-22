@@ -243,6 +243,27 @@ def intervals_partition(intervals):
             partitions.append(temp_constraint)
     return partitions, key_bnsc
 
+def unintersect_intervals(uintervals):
+    length = len(uintervals)
+    intervals = copy.deepcopy(uintervals)
+    lqsort(intervals, 0, length-1)
+    if length <= 1:
+        return intervals
+    un_intervals = []
+    i = 0
+    temp = intervals[0]
+    while i < length - 1:
+        i = i + 1
+        uc, flag = union_constraint(temp, intervals[i])
+        if flag == 1:
+            temp = uc
+        if flag == 2:
+            un_intervals.append(temp)
+            temp = intervals[i]
+    if temp not in un_intervals:
+        un_intervals.append(temp)
+    return un_intervals
+
 def lqsort(array, left, right):
     if left < right:
         mid = lqsortpartition(array, left, right)
@@ -260,29 +281,23 @@ def lqsortpartition(array, left, right):
         array[right] = array[left]
     array[left] = temp
     return left
- 
+
 def main():
-    c1 = Constraint("(2,5)")
-    c2 = Constraint("[2,6)")
+    c1 = Constraint("(2,5]")
+    c2 = Constraint("[2,5)")
     c3 = Constraint("[6,7)")
-    c4 = Constraint("[7,9]")
+    c4 = Constraint("[7,7]")
     c5 = Constraint("[8,+)")
     b1 = BracketNum('6', Bracket.LO)
     b2 = BracketNum('6', Bracket.LC)
     b3 = BracketNum('+', Bracket.RO)
     b4 = BracketNum('7', Bracket.LC)
     b5 = BracketNum('6', Bracket.LO)
-    uc,flag = union_constraint(c5,c4)
-    if flag == 1:
-        print uc.show(), flag
-    else:
-        for c in uc:
-            print c.show()
-        print flag
+
     l = [c2,c1,c5,c4,c3]
     lqsort(l, 0, 4)
-    #partitions,_ = intervals_partition()
-    for c in l:
+    unl = unintersect_intervals(l)
+    for c in unl:
         print c.show()
 
 if __name__=='__main__':
