@@ -71,7 +71,32 @@ def nform_union(X, Y):
             new_x2.append(new_constraint)
     new_x2 = unintersect_intervals(new_x2)
     return WNForm(new_x1, new_x2, m)
-    
+
+def nform_complement(X):
+    #x1 = comp(X.x1) join [0,Nk), x2 = comp(X.x2) join [Nk, (N+1)k), k = X.k
+    #x1
+    complement_x1 = complement_intervals(X.x1)
+    cover1 = Constraint('[' + '0' + ',' + str(X.N * X.k) + ')')
+    wnform_x1 = []
+    for c in complement_x1:
+        temp_inter, flag_inter = intersect_constraint(c, cover1)
+        if flag_inter == True:
+            wnform_x1.append(temp_inter)
+    wnform_x1 = unintersect_intervals(wnform_x1)
+    #x2
+    complement_x2 = complement_intervals(X.x2)
+    cover2 = Constraint('[' + str(X.N * X.k) + ',' + str((X.N+1)*X.k) + ')')
+    wnform_x2 = []
+    for c in complement_x2:
+        temp_inter, flag_inter = intersect_constraint(c, cover2)
+        if flag_inter == True:
+            wnform_x2.append(temp_inter)
+    wnform_x2 = unintersect_intervals(wnform_x2)
+    #k
+    wnform_k = X.k
+    wnform = WNForm(wnform_x1, wnform_x2, wnform_k)
+    return wnform
+
 def nform_add(X, Y):
     #build wnform1: x1 = X.x1 + Y.x1, x2 = X.x1 + Y.x2, k = Y.k
     wnform1_x1 = []
@@ -234,6 +259,26 @@ def main():
         print c.show()
     print "k: "
     print wnform3.k
+    print("-------------nf1 complement--------------")
+    comp_nf1 = nform_complement(nf1)
+    print "x1: "
+    for c in comp_nf1.x1:
+        print c.show()
+    print "x2: "
+    for c in comp_nf1.x2:
+        print c.show()
+    print "k: "
+    print comp_nf1.k
+    print("-------------nf2 complement--------------")
+    comp_nf2 = nform_complement(nf2)
+    print "x1: "
+    for c in comp_nf2.x1:
+        print c.show()
+    print "x2: "
+    for c in comp_nf2.x2:
+        print c.show()
+    print "k: "
+    print comp_nf2.k
 
 if __name__=='__main__':
 	main()

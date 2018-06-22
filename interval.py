@@ -224,6 +224,10 @@ def intersect_constraint(c1, c2):
         return Constraint("(0,0)"), False
 
 def union_constraint(c1, c2):
+    if c1.isEmpty() == True:
+        return c2, 1
+    if c2.isEmpty() == True:
+        return c1, 1
     sortlist = [c1,c2]
     #lqsort(sortlist, 0, len(sortlist)-1)
     lbsort(sortlist)
@@ -290,6 +294,13 @@ def unintersect_intervals(uintervals):
         un_intervals.append(temp)
     return un_intervals
 
+def complement_intervals(uintervals):
+    partitions, key_bnsc = intervals_partition(uintervals)
+    for c in uintervals:
+        if c in partitions:
+            partitions.remove(c)
+    return partitions
+
 def lqsort(array, left, right):
     if left < right:
         mid = lqsortpartition(array, left, right)
@@ -314,10 +325,10 @@ def lbsort(array):
             if array[j].min_bn > array[j+1].min_bn:
                 array[j], array[j+1] = array[j+1], array[j]
 def main():
-    c1 = Constraint("(2,5]")
-    c2 = Constraint("[0,3)")
-    c3 = Constraint("[6,7)")
-    c4 = Constraint("[7,7]")
+    c1 = Constraint("[3,5]")
+    c2 = Constraint("[6,7]")
+    c3 = Constraint("[3,5]")
+    c4 = Constraint("[0,1)")
     c5 = Constraint("(8,+)")
     b1 = BracketNum('6', Bracket.LO)
     b2 = BracketNum('6', Bracket.LC)
@@ -338,6 +349,9 @@ def main():
     unl = unintersect_intervals(l)
     for c in unl:
         print c.show()
-
+    print("-----------------------------")
+    cunl = complement_intervals(unl)
+    for c in cunl:
+        print c.show()
 if __name__=='__main__':
 	main()
