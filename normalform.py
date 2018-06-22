@@ -187,6 +187,19 @@ def wnform_to_nform(X):
 
 def wnform_to_nform_inf(X):
     #if there is inf in x1 or x2 of wnform
+    L = 0
+    L_bn = None
+    if len(X.x1) > 0:
+        if X.x1[len(X.x1)-1].max_bn.value == '+':
+            L = X.x1[len(X.x1)-1].min_bn.getIntvalue()
+            L_bn = X.x1[len(X.x1)-1].min_bn
+    if len(X.x2) > 0:
+        if X.x2[len(X.x1)-1].max_bn.value == '+':
+            if X.x2[len(X.x1)-1].min_bn.getIntvalue() < X.x1[len(X.x1)-1].min_bn.getIntvalue()
+                L = X.x2[len(X.x1)-1].min_bn.getIntvalue()
+                L_bn = X.x2[len(X.x1)-1].min_bn
+    n = math.floor(L/X.k)
+    N = math.ceil(L)
     return
 
 def wnform_to_nform_fin(X):
