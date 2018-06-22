@@ -149,6 +149,24 @@ class Constraint:
                 temp_closed_max = ']'
             guard = temp_closed_min + temp_min_value + ',' + temp_max_value + temp_closed_max
             return Constraint(guard)
+    def complement(self):
+        if self.isEmpty() == True:
+            return Constraint("[0,+)")
+        complement_min_bn = self.min_bn.complement()
+        complement_max_bn = self.max_bn.complement()
+        left_constraint = None
+        right_constraint = None
+        complement_intervals = []
+        if self.min_bn > BracketNum('0', Bracket.LC):
+            left_constraint = Constraint('['+'0'+','+complement_min_bn.getbn())
+            complement_intervals.append(left_constraint)
+        if self.max_bn < BracketNum('+', Bracket.RO):
+            right_constraint = Constraint(complement_max_bn.getbn()+','+'+'+')')
+            complement_intervals.append(right_constraint)
+        if len(complement_intervals) > 0:
+            return complement_intervals, True
+        else:
+            return [Constraint("(0,0)")], False
 
     def isEmpty(self):
         if self.max_bn < self.min_bn:
@@ -190,6 +208,8 @@ class Constraint:
         return self.guard
 
 def intersect_constraint(c1, c2):
+    if c1.isEmpty() == True or c2.isEmpty() == True:
+        return Constraint("(0,0)"), False
     min_bn1 = c1.min_bn
     max_bn1 = c1.max_bn
     min_bn2 = c2.min_bn
@@ -295,7 +315,7 @@ def lbsort(array):
                 array[j], array[j+1] = array[j+1], array[j]
 def main():
     c1 = Constraint("(2,5]")
-    c2 = Constraint("[2,5)")
+    c2 = Constraint("[0,3)")
     c3 = Constraint("[6,7)")
     c4 = Constraint("[7,7]")
     c5 = Constraint("(8,+)")
@@ -304,7 +324,11 @@ def main():
     b3 = BracketNum('+', Bracket.RO)
     b4 = BracketNum('7', Bracket.LC)
     b5 = BracketNum('6', Bracket.LO)
-
+    compl1, flag1 = c2.complement()
+    print flag1
+    for c in compl1:
+        print c.show()
+    print("-----------------------------")
     l = [c5, c3, c2, c1, c4]
     #lqsort(l, 0, 3)
     lbsort(l)

@@ -71,7 +71,7 @@ def nform_union(X, Y):
             new_x2.append(new_constraint)
     new_x2 = unintersect_intervals(new_x2)
     return WNForm(new_x1, new_x2, m)
-
+    
 def nform_add(X, Y):
     #build wnform1: x1 = X.x1 + Y.x1, x2 = X.x1 + Y.x2, k = Y.k
     wnform1_x1 = []
@@ -79,14 +79,16 @@ def nform_add(X, Y):
         for c2 in Y.x1:
             temp = c1 + c2
             #print temp.show()
-            wnform1_x1.append(temp)
+            if temp.isEmpty() == False:
+                wnform1_x1.append(temp)
     wnform1_x1 = unintersect_intervals(wnform1_x1)
     wnform1_x2 = []
     for c1 in X.x1:
         for c2 in Y.x2:
             temp = c1 + c2
             #print temp.show()
-            wnform1_x2.append(temp)
+            if temp.isEmpty() == False:
+                wnform1_x2.append(temp)
     wnform1_x2 = unintersect_intervals(wnform1_x2)
     wnform1_k = Y.k
     wnform1 = WNForm(wnform1_x1, wnform1_x2, wnform1_k)
@@ -96,7 +98,8 @@ def nform_add(X, Y):
     for c1 in X.x2:
         for c2 in Y.x1:
             temp = c1 + c2
-            wnform2_x2.append(temp)
+            if temp.isEmpty() == False:
+                wnform2_x2.append(temp)
     wnform2_x2 = unintersect_intervals(wnform2_x2)
     wnform2_k = X.k
     wnform2 = WNForm(wnform2_x1, wnform2_x2, wnform2_k)
@@ -110,7 +113,8 @@ def nform_add(X, Y):
             for c3 in B:
                 temp1 = c1 + c2
                 temp2 = temp1 + c3
-                wnform3_x1.append(temp2)
+                if temp2.isEmpty() == False:
+                    wnform3_x1.append(temp2)
     wnform3_x1 = unintersect_intervals(wnform3_x1)
     ceil = lcm(X.k, Y.k)
     lcm_constraint = Constraint('['+str(ceil)+','+str(ceil)+']')
@@ -119,7 +123,8 @@ def nform_add(X, Y):
         for c2 in Y.x2:
             temp1 = c1 + c2
             temp2 = temp1 + lcm_constraint
-            wnform3_x2.append(temp2)
+            if temp2.isEmpty() == False:
+                wnform3_x2.append(temp2)
     wnform3_x2 = unintersect_intervals(wnform3_x2)
     wnform3_k = gcd(X.k, Y.k)
     wnform3 = WNForm(wnform3_x1, wnform3_x2, wnform3_k)
