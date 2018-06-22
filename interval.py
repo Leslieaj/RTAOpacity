@@ -73,7 +73,11 @@ class BracketNum:
         if self.bracket == Bracket.RO:
             temp_bracket = Bracket.LC
         return BracketNum(temp_value, temp_bracket)
-    
+    def getIntvalue(self):
+        if self.value == '+':
+            return MAXVALUE
+        else:
+            return int(self.value)
     def getbn(self):
         if self.bracket == Bracket.LC:
             return '[' + self.value
@@ -201,13 +205,14 @@ def intersect_constraint(c1, c2):
 
 def union_constraint(c1, c2):
     sortlist = [c1,c2]
-    lqsort(sortlist, 0, len(sortlist)-1)
-    if int(sortlist[1].min_bn.value) < int(sortlist[0].max_bn.value):
+    #lqsort(sortlist, 0, len(sortlist)-1)
+    lbsort(sortlist)
+    if sortlist[1].min_bn.getIntvalue() < sortlist[0].max_bn.getIntvalue():
         temp_bn = sortlist[0].max_bn
         if sortlist[0].max_bn < sortlist[1].max_bn:
             temp_bn = sortlist[1].max_bn
         return Constraint(sortlist[0].min_bn.getbn()+','+temp_bn.getbn()), 1
-    elif int(sortlist[1].min_bn.value) == int(sortlist[0].max_bn.value):
+    elif sortlist[1].min_bn.getIntvalue() == sortlist[0].max_bn.getIntvalue():
         if sortlist[0].max_bn.bracket == Bracket.RO and sortlist[1].min_bn.bracket == Bracket.LO:
             return sortlist, 2
         else:
@@ -246,7 +251,8 @@ def intervals_partition(intervals):
 def unintersect_intervals(uintervals):
     length = len(uintervals)
     intervals = copy.deepcopy(uintervals)
-    lqsort(intervals, 0, length-1)
+    #lqsort(intervals, 0, length-1)
+    lbsort(intervals)
     if length <= 1:
         return intervals
     un_intervals = []
@@ -273,7 +279,7 @@ def lqsort(array, left, right):
 def lqsortpartition(array, left, right):
     temp = array[left]
     while left < right:
-        while left < right and array[right].min_bn >= temp.min_bn:
+        while left < right and array[right].min_bn > temp.min_bn:
             right = right - 1
         array[left] = array[right]
         while left < right and array[right].min_bn <= temp.min_bn:
@@ -282,20 +288,29 @@ def lqsortpartition(array, left, right):
     array[left] = temp
     return left
 
+def lbsort(array):
+    for i in range(len(array)-1):
+        for j in range(len(array)-i-1):
+            if array[j].min_bn > array[j+1].min_bn:
+                array[j], array[j+1] = array[j+1], array[j]
 def main():
     c1 = Constraint("(2,5]")
     c2 = Constraint("[2,5)")
     c3 = Constraint("[6,7)")
     c4 = Constraint("[7,7]")
-    c5 = Constraint("[8,+)")
+    c5 = Constraint("(8,+)")
     b1 = BracketNum('6', Bracket.LO)
     b2 = BracketNum('6', Bracket.LC)
     b3 = BracketNum('+', Bracket.RO)
     b4 = BracketNum('7', Bracket.LC)
     b5 = BracketNum('6', Bracket.LO)
 
-    l = [c2,c1,c5,c4,c3]
-    lqsort(l, 0, 4)
+    l = [c5, c3, c2, c1, c4]
+    #lqsort(l, 0, 3)
+    lbsort(l)
+    for c in l:
+        print c.show()
+    print("-----------------------------")
     unl = unintersect_intervals(l)
     for c in unl:
         print c.show()

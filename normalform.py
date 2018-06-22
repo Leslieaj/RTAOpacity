@@ -74,13 +74,22 @@ def nform_union(X, Y):
 
 def main():
     c1 = Constraint("[2,4]")
-    c2 = Constraint("[3,4]")
+    c2 = Constraint("[6,7]")
     c3 = Constraint("[3,5]")
     c4 = Constraint("[0,3)")
-    c5 = Constraint("(5,+)")
-    nf = union_intervals_to_nform([c1,c2,c3,c4])
-    #for c in nf.x1:
-        #print c.show()
+    c5 = Constraint("(8,+)")
+    l = [c2,c1,c5,c4,c3]
+    lbsort(l)
+    for c in l:
+        print c.show()
+    print("-----------------------------------")
+    unl = unintersect_intervals(l)
+    for c in unl:
+        print c.show()
+    print("-----------------------------------")
+    nf = union_intervals_to_nform([c1,c2,c3,c4,c5])
+    for c in nf.x1:
+        print c.show()
     for c in nf.x2:
         print c.show()
     print nf.k, nf.N
