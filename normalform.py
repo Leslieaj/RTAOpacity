@@ -195,7 +195,7 @@ def wnform_to_nform_inf(X):
             L_bn = X.x1[len(X.x1)-1].min_bn
     if len(X.x2) > 0:
         if X.x2[len(X.x1)-1].max_bn.value == '+':
-            if X.x2[len(X.x1)-1].min_bn.getIntvalue() < X.x1[len(X.x1)-1].min_bn.getIntvalue()
+            if X.x2[len(X.x1)-1].min_bn.getIntvalue() < X.x1[len(X.x1)-1].min_bn.getIntvalue():
                 L = X.x2[len(X.x1)-1].min_bn.getIntvalue()
                 L_bn = X.x2[len(X.x1)-1].min_bn
     n = math.floor(L/X.k)
