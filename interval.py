@@ -38,8 +38,25 @@ class BracketNum:
                 return True
             else:
                 return False
+    def __gt__(self, bn):
+        if self.value == '+':
+            if bn.value == '+':
+                return False
+            else:
+                return True
+        if int(self.value) > int(bn.value):
+            return True
+        elif int(self.value) < int(bn.value):
+            return False
+        else:
+            if self.bracket > bn.bracket:
+                return True
+            else:
+                return False
     def __ge__(self, bn):
-        return self.__lt__(bn)
+        return not self.__lt__(bn)
+    def __le__(self, bn):
+        return not self.__gt__(bn)
     def complement(self):
         if self.value == '+':
             return BracketNum('+', Bracket.RO)  #ceil
@@ -182,6 +199,22 @@ def intersect_constraint(c1, c2):
     else:
         return Constraint("(0,0)"), False
 
+def union_constraint(c1, c2):
+    sortlist = [c1,c2]
+    lqsort(sortlist, 0, len(sortlist)-1)
+    if int(sortlist[1].min_bn.value) < int(sortlist[0].max_bn.value):
+        temp_bn = sortlist[0].max_bn
+        if sortlist[0].max_bn < sortlist[1].max_bn:
+            temp_bn = sortlist[1].max_bn
+        return Constraint(sortlist[0].min_bn.getbn()+','+temp_bn.getbn()), 1
+    elif int(sortlist[1].min_bn.value) == int(sortlist[0].max_bn.value):
+        if sortlist[0].max_bn.bracket == Bracket.RO and sortlist[1].min_bn.bracket == Bracket.LO:
+            return sortlist, 2
+        else:
+            return Constraint(sortlist[0].min_bn.getbn()+','+sortlist[1].max_bn.getbn()), 1
+    else:
+        return sortlist, 2
+
 def intervals_partition(intervals):
     partitions = []
     floor_bn = BracketNum('0',Bracket.LC)
@@ -209,16 +242,45 @@ def intervals_partition(intervals):
             temp_constraint = Constraint(key_bnsc[index].getbn()+','+key_bnsc[index+1].getbn())
             partitions.append(temp_constraint)
     return partitions, key_bnsc
-        
-    
+
+def lqsort(array, left, right):
+    if left < right:
+        mid = lqsortpartition(array, left, right)
+        lqsort(array, left, mid-1)
+        lqsort(array, mid+1, right)
+
+def lqsortpartition(array, left, right):
+    temp = array[left]
+    while left < right:
+        while left < right and array[right].min_bn >= temp.min_bn:
+            right = right - 1
+        array[left] = array[right]
+        while left < right and array[right].min_bn <= temp.min_bn:
+            left = left + 1
+        array[right] = array[left]
+    array[left] = temp
+    return left
+ 
 def main():
     c1 = Constraint("(2,5)")
-    c2 = Constraint("[3,5)")
+    c2 = Constraint("[2,6)")
     c3 = Constraint("[6,7)")
     c4 = Constraint("[7,9]")
     c5 = Constraint("[8,+)")
+    b1 = BracketNum('6', Bracket.LO)
+    b2 = BracketNum('6', Bracket.LC)
+    b3 = BracketNum('+', Bracket.RO)
+    b4 = BracketNum('7', Bracket.LC)
+    b5 = BracketNum('6', Bracket.LO)
+    uc,flag = union_constraint(c5,c4)
+    if flag == 1:
+        print uc.show(), flag
+    else:
+        for c in uc:
+            print c.show()
+        print flag
     l = [c2,c1,c5,c4,c3]
-    l.sort()
+    lqsort(l, 0, 4)
     #partitions,_ = intervals_partition()
     for c in l:
         print c.show()
