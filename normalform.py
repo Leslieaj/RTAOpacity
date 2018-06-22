@@ -1,6 +1,6 @@
 #some defines about normal form of the union of unintersect intervals
 # depended on Dima's paper "Real-time Automaton"
-
+import math
 from interval import *
 
 class NForm:
@@ -179,6 +179,20 @@ def calculate_B(p, q):
         B.append(new_constraint)
     return B, B_dot
 
+def wnform_to_nform(X):
+    if (len(X.x1) > 0 and X.x1[len(X.x1)-1].max_bn.value == '+') or (len(X.x2) > 0 and X.x2[len(X.x2)-1].max_bn.value == '+'):
+        return wnform_to_nform_inf(X)
+    else:
+        return wnform_to_nform_fin(X)
+
+def wnform_to_nform_inf(X):
+    #if there is inf in x1 or x2 of wnform
+    return
+
+def wnform_to_nform_fin(X):
+    #if there is no inf in x1 or x2 of wnform
+    return
+
 def main():
     c1 = Constraint("[3,5]")
     c2 = Constraint("[6,7]")
@@ -279,6 +293,7 @@ def main():
         print c.show()
     print "k: "
     print comp_nf2.k
-
+    print("------------test-------------------------")
+    #wnform_to_nform(comp_nf2)
 if __name__=='__main__':
 	main()
