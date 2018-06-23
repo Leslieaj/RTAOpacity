@@ -326,10 +326,10 @@ def lbsort(array):
                 array[j], array[j+1] = array[j+1], array[j]
 def main():
     c1 = Constraint("[3,5]")
-    c2 = Constraint("[6,7]")
+    c2 = Constraint("[6,10]")
     c3 = Constraint("[3,5]")
     c4 = Constraint("[0,1)")
-    c5 = Constraint("(8,+)")
+    c5 = Constraint("(2,9)")
     b1 = BracketNum('6', Bracket.LO)
     b2 = BracketNum('6', Bracket.LC)
     b3 = BracketNum('+', Bracket.RO)

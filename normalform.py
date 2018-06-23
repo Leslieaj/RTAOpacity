@@ -187,24 +187,100 @@ def wnform_to_nform(X):
 
 def wnform_to_nform_inf(X):
     #if there is inf in x1 or x2 of wnform
+    #build L, n, N
     L = 0
     L_bn = None
-    if len(X.x1) > 0:
-        if X.x1[len(X.x1)-1].max_bn.value == '+':
+    if len(X.x1) > 0 and len(X.x2) == 0:
+        L = X.x1[len(X.x1)-1].min_bn.getIntvalue()
+        L_bn = X.x1[len(X.x1)-1].min_bn 
+    elif len(X.x1) == 0 and len(X.x2) > 0:
+        L = X.x2[len(X.x2)-1].min_bn.getIntvalue()
+        L_bn = X.x2[len(X.x2)-1].min_bn        
+    elif len(X.x1) > 0 and len(X.x2) > 0:
+        if X.x1[len(X.x1)-1].min_bn.getIntvalue() < X.x2[len(X.x2)-1].min_bn.getIntvalue():
             L = X.x1[len(X.x1)-1].min_bn.getIntvalue()
             L_bn = X.x1[len(X.x1)-1].min_bn
-    if len(X.x2) > 0:
-        if X.x2[len(X.x1)-1].max_bn.value == '+':
-            if X.x2[len(X.x1)-1].min_bn.getIntvalue() < X.x1[len(X.x1)-1].min_bn.getIntvalue():
-                L = X.x2[len(X.x1)-1].min_bn.getIntvalue()
-                L_bn = X.x2[len(X.x1)-1].min_bn
-    n = math.floor(L/X.k)
-    N = math.ceil(L)
-    return
+        else:
+            L = X.x2[len(X.x2)-1].min_bn.getIntvalue()
+            L_bn = X.x2[len(X.x2)-1].min_bn
+    else:
+        return NForm([],[],1,1)        
+    n = int(math.floor(L/X.k))
+    N = L + 1
+    #build z1
+    z1_list = []
+    z1_list.extend(X.x1)
+    for i in range(0, n+1):
+        ik_constraint = Constraint('[' + str(i*X.k) + ',' + str(i*X.k) + ']')
+        for c in X.x2:
+            new_constraint = c + ik_constraint
+            z1_list.append(new_constraint)
+    z1_list.append(Constraint(L_bn.getbn()+','+str(N)+')'))
+    z1_list = unintersect_intervals(z1_list)
+    z1 = []
+    cover = Constraint('['+'0'+','+str(N)+')')
+    for c in z1_list:
+        temp_inter, flag_inter = intersect_constraint(c, cover)
+        if flag_inter == True:
+            z1.append(temp_inter)
+    z1 = unintersect_intervals(z1)
+    #build z2, k
+    z2 = Constraint('['+str(N)+','+str(N+1)+']')
+    nform_k = 1
+    #get nform
+    nform = NForm(z1,z2,nform_k,N)
+    return nform
 
 def wnform_to_nform_fin(X):
     #if there is no inf in x1 or x2 of wnform
-    return
+    M = 0   
+    if len(X.x1) > 0 and len(X.x2) == 0:
+        M = X.x1[len(X.x1)-1].max_bn.getIntvalue() 
+    elif len(X.x1) == 0 and len(X.x2) > 0:
+        M = X.x2[len(X.x2)-1].max_bn.getIntvalue()       
+    elif len(X.x1) > 0 and len(X.x2) > 0:
+        if X.x1[len(X.x1)-1].max_bn.getIntvalue() > X.x2[len(X.x2)-1].max_bn.getIntvalue():
+            M = X.x1[len(X.x1)-1].max_bn.getIntvalue()
+        else:
+            M = X.x2[len(X.x2)-1].max_bn.getIntvalue()
+    else:
+        return NForm([],[],1,1)
+    n = int(math.floor(M/X.k))+1
+    #build z1
+    z1_list = []
+    z1_list.extend(X.x1)
+    temp_z1_list = []
+    for i in range(0, (n-1)+1):
+        ik_constraint = Constraint('['+str(i*X.k)+','+str(i*X.k)+']')
+        for c in X.x2:
+            new_constraint = c + ik_constraint
+            temp_z1_list.append(new_constraint)
+    cover1 = Constraint('['+'0'+','+str(n*X.k)+')')
+    for c in temp_z1_list:
+        temp_inter, flag_inter = intersect_constraint(c, cover1)
+        if flag_inter == True:
+            z1_list.append(temp_inter)
+    z1_list = unintersect_intervals(z1_list)
+    #build z2
+    z2_list = []
+    temp_z2_list = []
+    for i in range(1, n+1):
+        ik_constraint = Constraint('['+str(i*X.k)+','+str(i*X.k)+']')
+        for c in X.x2:
+            new_constraint = c + ik_constraint
+            temp_z2_list.append(new_constraint)
+    cover2 = Constraint('['+str(n*X.k)+','+str((n+1)*X.k)+')')
+    for c in temp_z2_list:
+        temp_inter, inter_flag = intersect_constraint(c, cover2)
+        if inter_flag == True:
+            z2_list.append(temp_inter)
+    z2_list = unintersect_intervals(z2_list)    
+    #build k, N
+    nform_k = X.k
+    nform_N = n
+    #get nform
+    nform = NForm(z1_list,z2_list,nform_k,nform_N)
+    return nform
 
 def main():
     c1 = Constraint("[3,5]")
@@ -306,7 +382,17 @@ def main():
         print c.show()
     print "k: "
     print comp_nf2.k
-    print("------------test-------------------------")
-    #wnform_to_nform(comp_nf2)
+    print("------------u_nf1_2 to nform-------------------------")
+    nf1_2_nf = wnform_to_nform(u_nf1_2)
+    print "x1: "
+    for c in nf1_2_nf.x1:
+        print c.show()
+    print "x2: "
+    for c in nf1_2_nf.x2:
+        print c.show()
+    print "k: "
+    print nf1_2_nf.k
+    print "N: "
+    print nf1_2_nf.N
 if __name__=='__main__':
 	main()
