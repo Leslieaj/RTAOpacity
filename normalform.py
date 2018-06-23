@@ -187,7 +187,13 @@ def nform_add(X, Y):
     wn_1_U_2_U_3 = nform_union(n_1_U_2, nform3)
     n_1_U_2_U_3 = wnform_to_nform(wn_1_U_2_U_3)
     return n_1_U_2_U_3
-    
+
+def nform_relative_complement(X, Y):
+    #X\Y = X inter comp(Y)
+    comp_Y_nf = nform_complement(Y)
+    X_sub_Y = nform_intersection(X, comp_Y_nf)
+    return X_sub_Y
+
 def nform_intersection(X, Y):
     comp_X_nf = nform_complement(X)
     comp_Y_nf = nform_complement(Y)
@@ -372,7 +378,12 @@ def main():
     print("----------nf1 inter nf2------------------")
     nf1_inter_nf2 = nform_intersection(nf1, nf2)
     nf1_inter_nf2.show()
-
+    print("----------u_nf1_2 \ nf1 -----------------")
+    nf_12_rc_1 = nform_relative_complement(u_nf1_2, nf1)
+    nf_12_rc_1.show()
+    print("----------u_nf1_2 \ nf2 -----------------")
+    nf_12_rc_2 = nform_relative_complement(u_nf1_2, nf2)
+    nf_12_rc_2.show()
     
 if __name__=='__main__':
 	main()
