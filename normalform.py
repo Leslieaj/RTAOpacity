@@ -9,6 +9,11 @@ class NForm:
         self.x2 = x2
         self.k = k
         self.N = N
+    def isEmpty(self):
+        if (self.x1 == None or len(self.x1) == 0) and (self.x2 == None or len(self.x2) == 0):
+            return True
+        else:
+            return False
     def show(self):
         print "x1: "
         for c in self.x1:
@@ -24,6 +29,11 @@ class WNForm:
         self.x1 = x1
         self.x2 = x2
         self.k = k
+    def isEmpty(self):
+        if (self.x1 == None or len(self.x1) == 0) and (self.x2 == None or len(self.x2) == 0):
+            return True
+        else:
+            return False
     def show(self):
         print "x1: "
         for c in self.x1:
@@ -329,6 +339,22 @@ def wnform_to_nform_fin(X):
     nform = NForm(z1_list,z2_list,nform_k,nform_N)
     return nform
 
+def nforms_partition(nfpartitions, X):
+    init_partitions = None
+    if len(nfpartitions) == 0:
+        init_partitions = [union_intervals_to_nform([Constraint("[0,+)")])]
+    else:
+        init_partitions = copy.deepcopy(nfpartitions)
+    final_partitions = []
+    for nf in init_partitions:
+        temp_inter = nform_intersection(nf, X)
+        if temp_inter.isEmpty() == False:
+            final_partitions.append(temp_inter)
+        temp_rc = nform_relative_complement(nf, X)
+        if temp_rc.isEmpty() == False:
+            final_partitions.append(temp_rc)
+    return final_partitions
+
 def main():
     c1 = Constraint("[3,5]")
     c2 = Constraint("[6,7]")
@@ -346,23 +372,19 @@ def main():
     print("------------------nf1--------------------")
     nf1 = union_intervals_to_nform(l1)
     nf1.show()
-
     print("------------------nf2--------------------")
     nf2 = union_intervals_to_nform(l2)
     nf2.show()
-
     print("-------------nf1 U nf2-------------------")
     u_nf1_2 = nform_union(nf1, nf2)
     u_nf1_2.show()
-
     print("--------------calculate_B----------------")
     p = 1
     q = 1
     B, B_dot = calculate_B(p,q)
     for c in B:
         print c.show()
-    print B_dot
-    
+    print B_dot    
     print("-------------nf1 complement--------------")
     comp_nf1 = nform_complement(nf1)
     comp_nf1.show()
@@ -384,6 +406,13 @@ def main():
     print("----------u_nf1_2 \ nf2 -----------------")
     nf_12_rc_2 = nform_relative_complement(u_nf1_2, nf2)
     nf_12_rc_2.show()
-    
+    print("----------partitions nf1 nf2---------------")
+    test = nforms_partition([], nf1)
+    test2 = nforms_partition(test, nf2)
+    for nf in test2:
+        print test2.index(nf)
+        nf.show()
+        print 
+
 if __name__=='__main__':
 	main()
