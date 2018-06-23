@@ -211,6 +211,13 @@ def nform_intersection(X, Y):
     x_inter_Y = nform_complement(comp_X_nf_U_comp_Y_nf)
     return x_inter_Y
 
+def nform_equal(X, Y):
+    temp = nform_relative_complement(X, Y)
+    if len(temp.x1) == 0 and len(temp.x2) == 0:
+        return True
+    else:
+        return False
+
 def calculate_B(p, q):
     #B = {a \in Q| 0<=a<lcm(p, q), a = l*p + m*q, l,m \in N}
     ceil = lcm(p,q)
@@ -413,6 +420,10 @@ def main():
         print nfpartitions12.index(nf)
         nf.show()
         print 
+    print("-------------nform equal-----------------")
+    print nform_equal(nf1, nf2)
+    print nform_equal(nf2, nf2)
+    print nform_equal(wnform_to_nform(nf2), nf2)
 
 if __name__=='__main__':
 	main()
