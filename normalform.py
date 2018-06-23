@@ -170,7 +170,17 @@ def nform_add(X, Y):
     wnform3_x2 = unintersect_intervals(wnform3_x2)
     wnform3_k = gcd(X.k, Y.k)
     wnform3 = WNForm(wnform3_x1, wnform3_x2, wnform3_k)
-    return wnform1, wnform2, wnform3
+    #return wnform1, wnform2, wnform3
+    #transform the 3 weak normalform to normalform, then get their union, return the normalform of the union finally.
+    nform1 = wnform_to_nform(wnform1)
+    nform2 = wnform_to_nform(wnform2)
+    nform3 = wnform_to_nform(wnform3)
+    wn_1_U_2 = nform_union(nform1,nform2)
+    n_1_U_2 = wnform_to_nform(wn_1_U_2)
+    wn_1_U_2_U_3 = nform_union(n_1_U_2, nform3)
+    n_1_U_2_U_3 = wnform_to_nform(wn_1_U_2_U_3)
+    return n_1_U_2_U_3
+    
 
 def calculate_B(p, q):
     #B = {a \in Q| 0<=a<lcm(p, q), a = l*p + m*q, l,m \in N}
@@ -304,13 +314,13 @@ def main():
     c2 = Constraint("[6,7]")
     c3 = Constraint("[3,5]")
     c4 = Constraint("[0,1)")
-    c5 = Constraint("(8,+)")
+    c5 = Constraint("(8,9)")
     l1 = [c2,c1,c5,c4,c3]
     
     c6 = Constraint("[2,2]")
     c7 = Constraint("[3,4]")
     c8 = Constraint("(5,7]")
-    c9 = Constraint("[12,+)")
+    c9 = Constraint("[12,13)")
     l2 = [c7,c9,c6,c8]
     
     print("------------------nf1--------------------")
@@ -332,14 +342,7 @@ def main():
     for c in B:
         print c.show()
     print B_dot
-    print("--------------nf1 + nf2------------------")
-    wnform1,wnform2,wnform3 = nform_add(nf1,nf2)
-    print("--------------wnform1--------------------")
-    wnform1.show()
-    print("--------------wnform2--------------------")
-    wnform2.show()
-    print("--------------wnform3--------------------")
-    wnform3.show()
+    
     print("-------------nf1 complement--------------")
     comp_nf1 = nform_complement(nf1)
     comp_nf1.show()
@@ -349,6 +352,10 @@ def main():
     print("------------u_nf1_2 to nform-------------------------")
     nf1_2_nf = wnform_to_nform(u_nf1_2)
     nf1_2_nf.show()
+    print("--------------nf1 + nf2------------------")
+    nform12 = nform_add(nf1,nf2)
+    nform12.show()
 
+    
 if __name__=='__main__':
 	main()
