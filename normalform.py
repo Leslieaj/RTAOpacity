@@ -288,8 +288,8 @@ def wnform_to_nform_fin(X):
             temp_z2_list.append(new_constraint)
     cover2 = Constraint('['+str(n*X.k)+','+str((n+1)*X.k)+')')
     for c in temp_z2_list:
-        temp_inter, inter_flag = intersect_constraint(c, cover2)
-        if inter_flag == True:
+        temp_inter, flag_inter = intersect_constraint(c, cover2)
+        if flag_inter == True:
             z2_list.append(temp_inter)
     z2_list = unintersect_intervals(z2_list)    
     #build k, N
