@@ -59,6 +59,8 @@ def lcm(a, b):
     return int(a * b / gcd(a, b))
 
 def union_intervals_to_nform(uintervals):
+    if len(uintervals) == 0:
+        return NForm([],[],1,1)
     if len(uintervals) >= 1:
         x1 = unintersect_intervals(uintervals)
         k = 1
@@ -362,6 +364,102 @@ def nforms_partitions(nfpartitions, X):
             final_partitions.append(temp_rc)
     return final_partitions
 
+def nform_star(X):
+    x1_allpoints = True
+    x2_allpoints = True
+    for c in X.x1:
+        if c.isPoint() == False:
+            x1_allpoints = False
+            break
+    for c in X.x2:
+        if c.isPoint() == False:
+            x2_allpoints = False
+            break
+    allpoints = x1_allpoints and x2_allpoints
+    if allpoints == True:
+        return nform_star_allpoints(X)
+    else:
+        return nform_star_nonpoints(X, x1_allpoints, x2_allpoints)
+
+def nform_star_allpoints(X):
+    #x1*
+    nform1 = points_star(X.x1)
+    #x2 to nf
+    temp_nform1 = union_intervals_to_nform(X.x2)
+    #(x2 U {k})*
+    points_list = X.x2
+    k_constraint = Constraint('['+str(X.k)+','+str(X.k)+']')
+    if k_constraint not in points_list:
+        points_list.append(k_constraint)
+    temp_nform2 = points_star(points_list)
+    # x2 + (x2 U {k})*, both normalform
+    temp_nform = nform_add(temp_nform1, temp_nform2)
+    #{0} to nf
+    floor_nform = NForm([Constraint("[0,0]")],[],1,1)
+    #(x2+{k}*)* == {0} U (x2 + (x2 U {k})*), all normalform
+    nform2 = nform_union(floor_nform, temp_nform)
+    #X* = x1* + (x2+{k}*)*
+    nf = nform_add(nform1, nform2)
+    return nf
+
+def points_star(points_list):
+    #star of empty set is [0,0]
+    if len(points_list) == 0:
+        return NForm([Constraint("[0,0]")],[],1,1)
+    elif len(points_list) == 1: # there is just one point, but we can see as two same points
+        pointnum = int(points_list[0].min_value)
+        return twopoints_star(pointnum, pointnum)
+    else:
+        pointnum = int(points_list[0].min_value)
+        temp_nform = twopoints_star(pointnum, pointnum)
+        for i in range(1,len(points_list)):
+            temp_num = int(points_list[i].min_value)
+            #easier, but may get very large k and N
+            #temp_nform = nform_add(temp_nform, twopoints_star(temp_num, temp_num))
+            if temp_num == 0:
+                continue
+            wnform1 = WNForm([], temp_nform.x1, temp_num)
+            nform1 = wnform_to_nform(wnform1)
+            wnform2_x1 = []
+            B,_ = calculate_B(temp_nform.k, temp_num)
+            for c1 in temp_nform.x2:
+                for c2 in B:
+                    temp = c1+c2
+                    if temp.isEmpty() == False:
+                        wnform2_x1.append(temp)
+            wnform2_x1 = unintersect_intervals(wnform2_x1)
+            wnform2_x2 = []
+            lcm_constraint = Constraint('['+str(lcm(temp_nform.k, temp_num))+','+str(lcm(temp_nform.k, temp_num))+']')
+            for c in temp_nform.x2:
+                temp = c + lcm_constraint
+                if temp.isEmpty() == False:
+                    wnform2_x2.append(temp)
+            wnform2_x2 = unintersect_intervals(wnform2_x2)
+            wnform2_k = gcd(temp_nform.k, temp_num)
+            wnform2 = WNForm(wnform2_x1, wnform2_x2, wnform2_k)
+            nform2 = wnform_to_nform(wnform2)
+            temp_nform = nform_union(nform1, nform2)
+        return temp_nform
+
+def twopoints_star(p, q):
+    if p == 0 and q == 0:
+        return NForm([Constraint("[0,0]")],[],1,1)
+    elif p == 0 and q > 0:
+        return twopoints_star(q,q)
+    elif p > 0 and q == 0:
+        return twopoints_star(p,p)
+    else:
+        x1,_ = calculate_B(p, q)
+        x2 = [Constraint('['+str(lcm(p,q))+','+str(lcm(p,q))+']')]
+        k = gcd(p,q)
+        wnform = WNForm(x1, x2, k)
+        #return wnform
+        nform = wnform_to_nform(wnform)
+        return nform
+
+def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
+    return
+        
 def main():
     c1 = Constraint("[3,5]")
     c2 = Constraint("[6,7]")
@@ -424,6 +522,17 @@ def main():
     print nform_equal(nf1, nf2)
     print nform_equal(nf2, nf2)
     print nform_equal(wnform_to_nform(nf2), nf2)
+    print("-----------------test--------------------")
+    p1 = Constraint("[1,1]")
+    p2 = Constraint("[2,2]")
+    p3 = Constraint("[3,3]")
+    p4 = Constraint("[7,7]")
+    pnform = points_star([p2])
+    pnform.show()
+    print("----------------------X*-----------------")
+    px1 = NForm([p3],[p4],1,7)
+    star = nform_star(px1)
+    star.show()
 
 if __name__=='__main__':
 	main()

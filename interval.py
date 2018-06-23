@@ -4,7 +4,7 @@ import copy
 from enum import IntEnum
 
 global MAXVALUE
-MAXVALUE = 10000
+MAXVALUE = 1000000000
 
 class Bracket(IntEnum):
     """
@@ -193,6 +193,13 @@ class Constraint:
                 return False
         else:
             return False
+    def isPoint(self):
+        if self.min_value == '+' or self.max_value == '+':
+            return False
+        if self.min_value == self.max_value and self.closed_min == True and self.closed_max == True:
+            return True
+        else:
+            return False
 
     def get_min(self):
         return int(self.min_value)
@@ -326,10 +333,10 @@ def lbsort(array):
                 array[j], array[j+1] = array[j+1], array[j]
 def main():
     c1 = Constraint("[3,5]")
-    c2 = Constraint("[6,10]")
+    c2 = Constraint("[0,0]")
     c3 = Constraint("[3,5]")
     c4 = Constraint("[0,1)")
-    c5 = Constraint("(2,9)")
+    c5 = Constraint("(2,+)")
     b1 = BracketNum('6', Bracket.LO)
     b2 = BracketNum('6', Bracket.LC)
     b3 = BracketNum('+', Bracket.RO)
@@ -353,5 +360,10 @@ def main():
     cunl = complement_intervals(unl)
     for c in cunl:
         print c.show()
+    print("-----------------------------")
+    print c1.isPoint()
+    print c2.isPoint()
+    print c4.isPoint()
+    print c5.isPoint()
 if __name__=='__main__':
 	main()
