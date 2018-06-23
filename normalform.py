@@ -9,12 +9,29 @@ class NForm:
         self.x2 = x2
         self.k = k
         self.N = N
+    def show(self):
+        print "x1: "
+        for c in self.x1:
+            print c.show()
+        print "x2: "
+        for c in self.x2:
+            print c.show()
+        print "k: ", self.k
+        print "N: ", self.N
 
 class WNForm:
     def __init__(self, x1, x2, k):
         self.x1 = x1
         self.x2 = x2
         self.k = k
+    def show(self):
+        print "x1: "
+        for c in self.x1:
+            print c.show()
+        print "x2: "
+        for c in self.x2:
+            print c.show()
+        print "k: ", self.k
 
 def gcd(a, b):  
     #assert a > 0 and b > 0,'parameters must be greater than 0.'     
@@ -298,34 +315,16 @@ def main():
     
     print("------------------nf1--------------------")
     nf1 = union_intervals_to_nform(l1)
-    print "x1: "
-    for c in nf1.x1:
-        print c.show()
-    print "x2: "
-    for c in nf1.x2:
-        print c.show()
-    print "k, N: "
-    print nf1.k, nf1.N
+    nf1.show()
+
     print("------------------nf2--------------------")
     nf2 = union_intervals_to_nform(l2)
-    print "x1: "
-    for c in nf2.x1:
-        print c.show()
-    print "x2: "
-    for c in nf2.x2:
-        print c.show()
-    print "k, N: "
-    print nf2.k, nf2.N
+    nf2.show()
+
     print("-------------nf1 U nf2-------------------")
     u_nf1_2 = nform_union(nf1, nf2)
-    print "x1: "
-    for c in u_nf1_2.x1:
-        print c.show()
-    print "x2: "
-    for c in u_nf1_2.x2:
-        print c.show()
-    print "k: "
-    print u_nf1_2.k
+    u_nf1_2.show()
+
     print("--------------calculate_B----------------")
     p = 1
     q = 1
@@ -336,63 +335,20 @@ def main():
     print("--------------nf1 + nf2------------------")
     wnform1,wnform2,wnform3 = nform_add(nf1,nf2)
     print("--------------wnform1--------------------")
-    print "x1: "
-    for c in wnform1.x1:
-        print c.show()
-    print "x2: "
-    for c in wnform1.x2:
-        print c.show()
-    print "k: "
-    print wnform1.k
+    wnform1.show()
     print("--------------wnform2--------------------")
-    print "x1: "
-    for c in wnform2.x1:
-        print c.show()
-    print "x2: "
-    for c in wnform2.x2:
-        print c.show()
-    print "k: "
-    print wnform2.k
+    wnform2.show()
     print("--------------wnform3--------------------")
-    print "x1: "
-    for c in wnform3.x1:
-        print c.show()
-    print "x2: "
-    for c in wnform3.x2:
-        print c.show()
-    print "k: "
-    print wnform3.k
+    wnform3.show()
     print("-------------nf1 complement--------------")
     comp_nf1 = nform_complement(nf1)
-    print "x1: "
-    for c in comp_nf1.x1:
-        print c.show()
-    print "x2: "
-    for c in comp_nf1.x2:
-        print c.show()
-    print "k: "
-    print comp_nf1.k
+    comp_nf1.show()
     print("-------------nf2 complement--------------")
     comp_nf2 = nform_complement(nf2)
-    print "x1: "
-    for c in comp_nf2.x1:
-        print c.show()
-    print "x2: "
-    for c in comp_nf2.x2:
-        print c.show()
-    print "k: "
-    print comp_nf2.k
+    comp_nf2.show()
     print("------------u_nf1_2 to nform-------------------------")
     nf1_2_nf = wnform_to_nform(u_nf1_2)
-    print "x1: "
-    for c in nf1_2_nf.x1:
-        print c.show()
-    print "x2: "
-    for c in nf1_2_nf.x2:
-        print c.show()
-    print "k: "
-    print nf1_2_nf.k
-    print "N: "
-    print nf1_2_nf.N
+    nf1_2_nf.show()
+
 if __name__=='__main__':
 	main()
