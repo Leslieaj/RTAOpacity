@@ -339,7 +339,7 @@ def wnform_to_nform_fin(X):
     nform = NForm(z1_list,z2_list,nform_k,nform_N)
     return nform
 
-def nforms_partition(nfpartitions, X):
+def nforms_partitions(nfpartitions, X):
     init_partitions = None
     if len(nfpartitions) == 0:
         init_partitions = [union_intervals_to_nform([Constraint("[0,+)")])]
@@ -391,9 +391,9 @@ def main():
     print("-------------nf2 complement--------------")
     comp_nf2 = nform_complement(nf2)
     comp_nf2.show()
-    print("------------u_nf1_2 to nform-------------")
-    nf1_2_nf = wnform_to_nform(u_nf1_2)
-    nf1_2_nf.show()
+    #print("------------u_nf1_2 to nform-------------")
+    #nf1_2_nf = wnform_to_nform(u_nf1_2)
+    #nf1_2_nf.show()
     print("--------------nf1 + nf2------------------")
     nform12 = nform_add(nf1,nf2)
     nform12.show()
@@ -407,10 +407,10 @@ def main():
     nf_12_rc_2 = nform_relative_complement(u_nf1_2, nf2)
     nf_12_rc_2.show()
     print("----------partitions nf1 nf2---------------")
-    test = nforms_partition([], nf1)
-    test2 = nforms_partition(test, nf2)
-    for nf in test2:
-        print test2.index(nf)
+    nfpartitions1 = nforms_partitions([], nf1)
+    nfpartitions12 = nforms_partitions(nfpartitions1, nf2)
+    for nf in nfpartitions12:
+        print nfpartitions12.index(nf)
         nf.show()
         print 
 
