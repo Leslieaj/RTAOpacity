@@ -87,10 +87,14 @@ def nform_union(X, Y):
             new_constraint = constraint + l_constraint
             new_x2.append(new_constraint)
     new_x2 = unintersect_intervals(new_x2)
-    return WNForm(new_x1, new_x2, m)
+    wnform = WNForm(new_x1, new_x2, m)
+    #return wnform
+    nform = wnform_to_nform(wnform)
+    return nform
 
 def nform_complement(X):
-    #x1 = comp(X.x1) join [0,Nk), x2 = comp(X.x2) join [Nk, (N+1)k), k = X.k
+    #weak normalform:x1 = comp(X.x1) join [0,Nk), x2 = comp(X.x2) join [Nk, (N+1)k), k = X.k
+    #then transform it to normalform
     #x1
     complement_x1 = complement_intervals(X.x1)
     cover1 = Constraint('[' + '0' + ',' + str(X.N * X.k) + ')')
@@ -112,7 +116,10 @@ def nform_complement(X):
     #k
     wnform_k = X.k
     wnform = WNForm(wnform_x1, wnform_x2, wnform_k)
-    return wnform
+    #return wnform
+    # to normalform
+    nform = wnform_to_nform(wnform)
+    return nform
 
 def nform_add(X, Y):
     #build wnform1: x1 = X.x1 + Y.x1, x2 = X.x1 + Y.x2, k = Y.k
@@ -181,6 +188,12 @@ def nform_add(X, Y):
     n_1_U_2_U_3 = wnform_to_nform(wn_1_U_2_U_3)
     return n_1_U_2_U_3
     
+def nform_intersection(X, Y):
+    comp_X_nf = nform_complement(X)
+    comp_Y_nf = nform_complement(Y)
+    comp_X_nf_U_comp_Y_nf = nform_union(comp_X_nf, comp_Y_nf)
+    x_inter_Y = nform_complement(comp_X_nf_U_comp_Y_nf)
+    return x_inter_Y
 
 def calculate_B(p, q):
     #B = {a \in Q| 0<=a<lcm(p, q), a = l*p + m*q, l,m \in N}
@@ -273,6 +286,7 @@ def wnform_to_nform_fin(X):
     else:
         return NForm([],[],1,1)
     n = int(math.floor(M/X.k))+1
+    #print M, n
     #build z1
     z1_list = []
     z1_list.extend(X.x1)
@@ -314,7 +328,7 @@ def main():
     c2 = Constraint("[6,7]")
     c3 = Constraint("[3,5]")
     c4 = Constraint("[0,1)")
-    c5 = Constraint("(8,9)")
+    c5 = Constraint("(8,+)")
     l1 = [c2,c1,c5,c4,c3]
     
     c6 = Constraint("[2,2]")
@@ -349,12 +363,15 @@ def main():
     print("-------------nf2 complement--------------")
     comp_nf2 = nform_complement(nf2)
     comp_nf2.show()
-    print("------------u_nf1_2 to nform-------------------------")
+    print("------------u_nf1_2 to nform-------------")
     nf1_2_nf = wnform_to_nform(u_nf1_2)
     nf1_2_nf.show()
     print("--------------nf1 + nf2------------------")
     nform12 = nform_add(nf1,nf2)
     nform12.show()
+    print("----------nf1 inter nf2------------------")
+    nf1_inter_nf2 = nform_intersection(nf1, nf2)
+    nf1_inter_nf2.show()
 
     
 if __name__=='__main__':
