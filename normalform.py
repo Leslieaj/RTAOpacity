@@ -475,6 +475,10 @@ def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
             flag = 0
         else:
             flag = int(low.min_bn.value)
+    if len(X.x2) > 0:
+        flag2 = int(X.x2[0].min_value)
+    else:
+        flag2 = 1 # unuseful
     if flag == 0:
         nform_x1 = [Constraint("[0,1)")]
         nform_x2 = [Constraint("[1,2)")]
@@ -494,7 +498,6 @@ def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
                 temp_m = int(math.ceil(a * (int(math.floor(a/(b-a))) + 1))) + 1
                 if temp_m < M:
                     M = temp_m
-        print M
         #calculate Y
         Y = []
         cover = Constraint('['+'0'+','+str(M)+')')
@@ -507,8 +510,7 @@ def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
         else:
             temp = []
             temp.extend(X.x1)
-            n = int(math.floor(M/X.k - X.N))
-            print n
+            n = int(math.ceil(M/flag2))
             for i in range(0, n+1):
                 k_constraint = Constraint('['+str(i*X.k)+','+str(i*X.k)+']')
                 for c in X.x2:
@@ -520,11 +522,9 @@ def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
                 if flag_inter == True:
                     Y.append(temp_inter)
             Y = unintersect_intervals(Y)
-        for c in Y:
-            print c.show()
         #calculate z1
         z1 = []
-        Y_bound = int(math.floor((X.N*X.k)/flag))+1
+        Y_bound = int(math.ceil(M/flag))
         temp_z1 = []        
         zero_constraint = Constraint("[0,0]")
         temp_z1 = [zero_constraint]
@@ -621,7 +621,7 @@ def main():
     zero_point = union_intervals_to_nform([Constraint("[0,0]")])
     zero_point.show()
     print("----------------------X* points-----------------")
-    px1 = NForm([Constraint("[0,0]")],[c1],2,1)
+    px1 = NForm([Constraint("[0,0]")],[c1],2,2)
     star = nform_star(px1)
     star.show()
     print("-----------------")
