@@ -1,6 +1,7 @@
 #some defines about normal form of the union of unintersect intervals
 # depended on Dima's paper "Real-time Automaton"
 import math
+import time
 from interval import *
 
 class NForm:
@@ -525,29 +526,66 @@ def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
         #calculate z1
         z1 = []
         Y_bound = int(math.ceil(M/flag))
+        
         temp_z1 = []        
         zero_constraint = Constraint("[0,0]")
         temp_z1 = [zero_constraint]
         num = Y_bound
+        print num
+        start = time.time()
+        index = 0
         while num > 0:
             num = num - 1
             temp = copy.deepcopy(temp_z1)
-            for c1 in temp:
+            for i in range(index, len(temp)):
                 for c2 in Y:
-                    new_constraint = c1 + c2
+                    new_constraint = temp[i] + c2
                     if new_constraint.isEmpty() == False and new_constraint not in temp:
-                        temp_z1.append(new_constraint)   
+                        temp_z1.append(new_constraint) 
+            index = len(temp)  
+        end = time.time()
+        print end-start
+        
+        """
+        start = time.time()
+        temp_z1 = horner(Y, Y_bound)
+        end = time.time()
+        print end-start
+        """
+        start = time.time()
         for c in temp_z1:
             temp_inter, flag_inter = intersect_constraint(c, cover)
             if flag_inter == True:
                 z1.append(temp_inter)
+        end = time.time()
+        print end-start
+        start = time.time()
         z1 = unintersect_intervals(z1)
+        end = time.time()
+        print end-start
         #calculate z2
         z2 = [Constraint('['+str(M)+','+str(M+1)+')')]
         nform_k = 1
         nform_N = M
         nform = NForm(z1,z2,nform_k,nform_N)
         return nform
+
+def horner(Y, num):
+    empty_list = []
+    zero_constraint = Constraint("[0,0]")
+    i = 1
+    poly = []
+    while i < num + 2:
+        i = i+1
+        temp = copy.deepcopy(poly)
+        for c1 in temp:
+            for c2 in Y:
+                new_constraint = c1 + c2
+                if new_constraint.isEmpty() == False and (new_constraint not in temp):
+                    poly.append(new_constraint)
+        if zero_constraint not in poly:
+            poly.append(zero_constraint)
+    return poly
 
 def main():
     c1 = Constraint("[4,5]")
@@ -622,8 +660,11 @@ def main():
     zero_point.show()
     print("----------------------X* points-----------------")
     px1 = NForm([Constraint("[0,0]")],[c1],2,2)
-    star = nform_star(px1)
-    star.show()
+    star1 = nform_star(px1)
+    star1.show()
     print("-----------------")
+    px2 = NForm([Constraint("[4,5]")],[],1,6)
+    star2 = nform_star(px2)
+    star2.show()
 if __name__=='__main__':
 	main()
