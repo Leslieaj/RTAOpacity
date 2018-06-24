@@ -74,11 +74,19 @@ def alphabet_classify(timed_alphabet, sigma):
     temp_set = {}
     for label in sigma:
         temp_set[label] = []
-        #label_list = []
         for timedlabel in timed_alphabet:
             if timedlabel.label == label:
                 temp_set[label].append(timedlabel)
     return temp_set
+
+def alphabet_partitions(timed_alphabet):
+    alphpartitions = {}
+    for key in timed_alphabet:
+        nfpatitions = []
+        for timedlabel in timed_alphabet[key]:
+            nfpatitions = nforms_partitions(nfpatitions, timedlabel.nfc)
+        alphpartitions[key] = nfpatitions
+    return alphpartitions
 
 def main():
     print("---------------------a.json----------------")
@@ -93,6 +101,8 @@ def main():
     print("-----------A_secret to FA-----------------------")
     AS_FA = rta_to_fa(AS)
     AS_FA.show()
+    print("---------------------partitions-------------")
+    alphabet_partitions(A_FA.timed_alphabet)
 
 if __name__=='__main__':
 	main()
