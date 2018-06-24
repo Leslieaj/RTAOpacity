@@ -1,7 +1,8 @@
 #some defines about normal form of the union of unintersect intervals
 # depended on Dima's paper "Real-time Automaton"
-import math
+
 import time
+import math
 from interval import *
 
 class NForm:
@@ -526,12 +527,10 @@ def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
         #calculate z1
         z1 = []
         Y_bound = int(math.ceil(M/flag))
-        
         temp_z1 = []        
         zero_constraint = Constraint("[0,0]")
         temp_z1 = [zero_constraint]
         num = Y_bound
-        print num
         start = time.time()
         index = 0
         while num > 0:
@@ -545,7 +544,6 @@ def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
             index = len(temp)  
         end = time.time()
         print end-start
-        
         """
         start = time.time()
         temp_z1 = horner(Y, Y_bound)
@@ -663,8 +661,9 @@ def main():
     star1 = nform_star(px1)
     star1.show()
     print("-----------------")
-    px2 = NForm([Constraint("[4,5]")],[],1,6)
+    px2 = NForm([Constraint("[2,3]"), Constraint("(4,7]")],[],1,8)
     star2 = nform_star(px2)
     star2.show()
+
 if __name__=='__main__':
 	main()
