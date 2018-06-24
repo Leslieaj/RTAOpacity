@@ -458,6 +458,64 @@ def twopoints_star(p, q):
         return nform
 
 def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
+    flag = 2
+    zero_constraint = Constraint("[0,0]")
+    temp_x_x1 = copy.deepcopy(X.x1)
+    temp_x_x1.remove(zero_constraint)
+    if len(temp_x_x1) == 0: # original or after removing {0}, x1 is empty
+        flag = 2
+    else:
+        upper = temp_x_x1[len(temp_x_x1)-1]
+        # if upper = <0, a> (a>0), so  we remove [0,0], then low = (0, a>. 
+        #The max low_bound is still 0, so We donot need to do that, just see the value is 0 or not.
+        if low.min_bn.value == '0': 
+            flag = 1
+        else:
+            flag = 2
+    if flag == 1:
+        nform_x1 = [Constraint("[0,1)")]
+        nform_x2 = [Constraint("[1,2)")]
+        nform_k = 1
+        nform_N = 1
+        return NForm(nform_x1, nform_x2, nform_k, nform_N)
+    if flag == 2:
+        #get minmal M
+        allintervals = []
+        allintervals.extend(X.x1)
+        allintervals.extend(X.x2)
+        M = MAXVALUE
+        for c in allintervals:
+            a = int(c.min_value)
+            b = c.max_bn.getIntvalue()
+            if 0 < a and a < b: # 0 < a < b
+                temp_m = int(math.ceil(a * (int(math.floor(a/(b-a))) + 1))) + 1
+                if temp_m < M:
+                    M = temp_m
+        Y = []
+        cover = Constraint('['+'0'+','+str(M)+')')
+        if X.N * X.k >= M:
+            for c in X.x1:
+                temp_inter, flag_inter = intersect_constraint(c, cover)
+                if flag_inter == True:
+                    Y.append(temp_inter)
+            Y = unintersect_intervals(Y)
+        else:
+            temp = []
+            temp.extend(X.x1)
+            n = int(math.floor(M/X.k - X.N))
+            for i in range(0, n+1):
+                k_constraint = Constraint('['+str(i*N.k)+','+str(i*N.k)+']')
+                for c in X.x2:
+                    new_constraint = c + k_constraint
+                    if new_constraint.isEmpty() == False:
+                        temp.append(new_constraint)
+            for c in temp:
+                temp_inter, flag_inter = intersect_constraint(c, cover)
+                if flag_inter == True:
+                    Y.append(temp_inter)
+            Y = unintersect_intervals(Y)
+        return
+
     return
         
 def main():
@@ -529,10 +587,12 @@ def main():
     p4 = Constraint("[7,7]")
     pnform = points_star([p2])
     pnform.show()
+    zero_point = union_intervals_to_nform([Constraint("[0,0]")])
+    zero_point.show()
     print("----------------------X*-----------------")
     px1 = NForm([p3],[p4],1,7)
     star = nform_star(px1)
     star.show()
-
+    print("-----------------")
 if __name__=='__main__':
 	main()

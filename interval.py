@@ -332,11 +332,11 @@ def lbsort(array):
             if array[j].min_bn > array[j+1].min_bn:
                 array[j], array[j+1] = array[j+1], array[j]
 def main():
-    c1 = Constraint("[3,5]")
+    c1 = Constraint("[4,5]")
     c2 = Constraint("[0,0]")
-    c3 = Constraint("[3,5]")
+    c3 = Constraint("[4,5]")
     c4 = Constraint("[0,1)")
-    c5 = Constraint("(2,+)")
+    c5 = Constraint("(2,3)")
     b1 = BracketNum('6', Bracket.LO)
     b2 = BracketNum('6', Bracket.LC)
     b3 = BracketNum('+', Bracket.RO)
