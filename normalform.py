@@ -218,7 +218,7 @@ def nform_intersection(X, Y):
 def nform_equal(X, Y):
     X_sub_Y = nform_relative_complement(X, Y)
     Y_sub_X = nform_relative_complement(Y,X)
-    if len(X_sub_Y.x1) == 0 and len(X_sub_Y.x2) == 0 and len(Y_sub_X.x1) == 0 and len(Y_sub_X.x2) == 0:
+    if X_sub_Y.isEmpty() == True and Y_sub_X.isEmpty() == True:
         return True
     else:
         return False
@@ -226,7 +226,7 @@ def nform_equal(X, Y):
 def nform_containedin(X, Y):
     #Is X subset of Y ?  X \ Y = \emptyset
     X_sub_Y = nform_relative_complement(X, Y)
-    if X_sub_Y.x1 == [] and X_sub_Y.x2 == []:
+    if X_sub_Y.isEmpty() == True:
         return True
     else:
         return False

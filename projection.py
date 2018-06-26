@@ -87,6 +87,80 @@ def unobservable_intervals(btau):
         RE = copy.deepcopy(RE_new)
     return RE
 
+def delete_unobservable_trans(fa, observable):
+    new_fa = copy.deepcopy(fa)
+    obser_trans = []
+    for tran in new_fa.trans:
+        if tran.timedlabel.label in observable:
+            tran.id = len(obser_trans)
+            obser_trans.append(tran)
+    new_fa.trans = obser_trans
+    return new_fa
+
+def unobservable_trans(btau, RE):
+    unobser_trans = []
+    n = len(btau.states)
+    for i in range(0, n):
+        for j in range(0, n):
+            if btau.states[i].init == True and btau.states[j].accept == True:
+                if RE[i][j].isEmpty() == False and nform_equal(RE[i][j], NForm([Constraint("[0,0]")],[],1,1)) == False: 
+                #RE[i][j] is not empty normalform and zero normalform
+                    source_state = btau.states[i].name
+                    target_state = btau.states[j].name
+                    new_timedlabel = TimedLabel("", "Tau", RE[i][j])
+                    print RE[i][j].show()
+                    new_tran = FATran(len(unobser_trans), source_state, target_state, new_timedlabel)
+                    unobser_trans.append(new_tran)
+    return unobser_trans
+
+def new_observable_trans(fa, unobser_trans):
+    new_trans = []
+    new_trans.extend(fa.trans)
+    for ut in unobser_trans:
+        new_source = ut.target
+        for tran in fa.trans:
+            if tran.source == new_source:
+                new_target = tran.target
+                new_nfc = nform_add(ut.timedlabel.nfc, tran.timedlabel.nfc)
+                new_timedlabel = TimedLabel("", tran.timedlabel.label, new_nfc)
+                new_tran = FATran(len(new_trans), ut.source, tran.target, new_timedlabel)
+                new_trans.append(new_tran)
+    return new_trans
+
+def projection(fa, observable):
+    btau = buildBTau(fa, observable)
+    RE = unobservable_intervals(btau)
+    new_fa = delete_unobservable_trans(fa, observable)
+    unobser_trans = unobservable_trans(btau, RE)
+    new_trans = new_observable_trans(new_fa, unobser_trans)
+    trans = []
+    trans.extend(new_trans)
+    temp_alphabet = []
+    sigma = []
+    state_names = []
+    accept_names = []
+    for tran in trans:
+        label = tran.timedlabel.label
+        if label not in sigma:
+           sigma.append(label)
+        if tran.timedlabel not in temp_alphabet:
+            temp_alphabet.append(tran.timedlabel)
+        if tran.source not in state_names:
+            state_names.append(tran.source)
+        if tran.target not in state_names:
+            state_names.append(tran.target)
+    new_states = []
+    for s in new_fa.states:
+        if s.name in state_names:
+            new_states.append(s)
+            if s.accept == True:
+                accept_names.append(s.name)
+    name = "projection_" + new_fa.name
+    initstate_name = new_fa.initstate_name
+    timed_alphabet = alphabet_classify(temp_alphabet,sigma)
+    projection_fa = FA(name, timed_alphabet, new_states, trans, initstate_name, accept_names)
+    return projection_fa
+
 def main():
     print("---------------------a.json----------------")
     A = buildRTA("a.json")
@@ -134,6 +208,9 @@ def main():
         for j in range(0,n):
             RE[i][j].show()
             print
+    print("---------------------projection B------------------------")
+    projection_B = projection(A_FA, observable)
+    projection_B.show()
 
 if __name__=='__main__':
 	main()   
