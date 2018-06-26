@@ -60,6 +60,33 @@ def buildBTau(fa, observable):
             s.accept = True
     return BTau(states, temp_alphabet, trans, initstate_name, accept_names)
 
+def unobservable_intervals(btau):
+    n = len(btau.states)
+    empty_nf = NForm([],[],1,1)
+    zero_nf = NForm([Constraint("[0,0]")],[],1,1)
+    RE = [[empty_nf for col in range(n)] for row in range(n)]
+    for s_i, i in zip(btau.states, range(0,n)):
+        for s_j, j in zip(btau.states, range(0,n)):
+            temp_source = s_i.name
+            temp_target = s_j.name
+            for tran in btau.trans:
+                if temp_source == tran.source and temp_target == tran.target:
+                    RE[i][j] = nform_union(RE[i][j], tran.timedlabel.nfc)
+    for i in range(0,n):
+        RE[i][i] = nform_union(RE[i][i], zero_nf)
+    for i in range(0,n):
+        for j in range(0,n):
+            RE[i][j].show()
+            print
+    print("---------------------------------------------------")
+    RE_new = copy.deepcopy(RE)
+    for k in range(0, n):
+        for i in range(0, n):
+            for j in range(0, n):
+                RE_new[i][j] = nform_union(RE[i][j], nform_add(nform_add(RE[i][k], nform_star(RE[k][k])), RE[k][j]))
+        RE = copy.deepcopy(RE_new)
+    return RE
+
 def main():
     print("---------------------a.json----------------")
     A = buildRTA("a.json")
@@ -100,6 +127,13 @@ def main():
     observable = ['a']
     Btau = buildBTau(A_FA, observable)
     Btau.show()
+    print("-------------------BTau unobservable_intervals------------------------------")
+    RE = unobservable_intervals(Btau)
+    n = len(Btau.states)
+    for i in range(0,n):
+        for j in range(0,n):
+            RE[i][j].show()
+            print
 
 if __name__=='__main__':
 	main()   

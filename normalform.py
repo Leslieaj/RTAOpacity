@@ -398,7 +398,9 @@ def nform_star_allpoints(X):
     #x2 to nf
     temp_nform1 = union_intervals_to_nform(X.x2)
     #(x2 U {k})*
-    points_list = X.x2
+    points_list = []
+    points_list.extend(X.x2)
+    #points_list = copy.deepcopy(X.x2)
     k_constraint = Constraint('['+str(X.k)+','+str(X.k)+']')
     if k_constraint not in points_list:
         points_list.append(k_constraint)
@@ -666,13 +668,14 @@ def main():
     zero_point = union_intervals_to_nform([Constraint("[0,0]")])
     zero_point.show()
     print("----------------------X* points-----------------")
-    px1 = NForm([Constraint("[0,0]")],[c1],2,2)
+    px1 = NForm([Constraint("[0,0]")],[],1,1)
     star1 = nform_star(px1)
     star1.show()
     print("-----------------")
-    px2 = NForm([Constraint("[2,3]"), Constraint("(4,7]")],[],1,8)
-    star2 = nform_star(px2)
-    star2.show()
+    px1.show()
+    #px2 = NForm([Constraint("[2,3]"), Constraint("(4,7]")],[],1,8)
+    #star2 = nform_star(px2)
+    #star2.show()
 
 if __name__=='__main__':
 	main()
