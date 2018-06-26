@@ -222,6 +222,14 @@ def nform_equal(X, Y):
     else:
         return False
 
+def nform_containedin(X, Y):
+    #Is X subset of Y ?  X \ Y = \emptyset
+    X_sub_Y = nform_relative_complement(X, Y)
+    if X_sub_Y.x1 == [] and X_sub_Y.x2 == []:
+        return True
+    else:
+        return False
+    
 def calculate_B(p, q):
     #B = {a \in Q| 0<=a<lcm(p, q), a = l*p + m*q, l,m \in N}
     ceil = lcm(p,q)
