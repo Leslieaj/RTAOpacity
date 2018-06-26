@@ -216,8 +216,9 @@ def nform_intersection(X, Y):
     return x_inter_Y
 
 def nform_equal(X, Y):
-    temp = nform_relative_complement(X, Y)
-    if len(temp.x1) == 0 and len(temp.x2) == 0:
+    X_sub_Y = nform_relative_complement(X, Y)
+    Y_sub_X = nform_relative_complement(Y,X)
+    if len(X_sub_Y.x1) == 0 and len(X_sub_Y.x2) == 0 and len(Y_sub_X.x1) == 0 and len(Y_sub_X.x2) == 0:
         return True
     else:
         return False
