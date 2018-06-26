@@ -43,7 +43,7 @@ class RTA:
         print
         for t in self.trans:
             print t.id, t.source, t.label, t.target
-            print t.nfc.show()
+            t.nfc.show()
             print
         print self.initstate_name
         print self.accept_names
@@ -64,12 +64,17 @@ def buildRTA(jsonfile):
             s.accept = True
     trans = []
     for tran in trans_set:
-        tran_id = tran.encode("utf-8")
+        tran_id = int(tran.encode("utf-8"))
         source = trans_set[tran][0].encode("utf-8")
         label = trans_set[tran][1].encode("utf-8")
-        constraint = Constraint(trans_set[tran][2].encode("utf-8"))
+        intervals_str = trans_set[tran][2].encode("utf-8")
+        intervals_list = intervals_str.split('U')
+        constraints_list = []
+        for constraint in intervals_list:
+            new_constraint = Constraint(constraint.strip())
+            constraints_list.append(new_constraint)
         target = trans_set[tran][3].encode("utf-8")
-        nfc = union_intervals_to_nform([constraint])
+        nfc = union_intervals_to_nform(constraints_list)
         rta_tran = RTATran(tran_id, source, target, label, nfc)
         trans += [rta_tran]
     return RTA(name, sigma, S, trans, initstate, accept_list)
