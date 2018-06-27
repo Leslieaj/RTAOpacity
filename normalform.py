@@ -542,7 +542,7 @@ def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
         zero_constraint = Constraint("[0,0]")
         temp_z1 = [zero_constraint]
         num = Y_bound
-        start = time.time()
+        #start = time.time()
         index = 0
         while num > 0:
             num = num - 1
@@ -553,25 +553,25 @@ def nform_star_nonpoints(X, x1_allpoints, x2_allpoints):
                     if new_constraint.isEmpty() == False and new_constraint not in temp:
                         temp_z1.append(new_constraint) 
             index = len(temp)  
-        end = time.time()
-        print end-start
+        #end = time.time()
+        #print end-start
         """
         start = time.time()
         temp_z1 = horner(Y, Y_bound)
         end = time.time()
         print end-start
         """
-        start = time.time()
+        #start = time.time()
         for c in temp_z1:
             temp_inter, flag_inter = intersect_constraint(c, cover)
             if flag_inter == True:
                 z1.append(temp_inter)
-        end = time.time()
-        print end-start
+        #end = time.time()
+        #print end-start
         start = time.time()
         z1 = unintersect_intervals(z1)
-        end = time.time()
-        print end-start
+        #end = time.time()
+        #print end-start
         #calculate z2
         z2 = [Constraint('['+str(M)+','+str(M+1)+')')]
         nform_k = 1

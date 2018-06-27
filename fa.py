@@ -395,12 +395,6 @@ def nfa_to_dfa(rfa):
             for key in statename_value:
                 if refined_f[statename][label] == statename_value[key]:
                     refined_f[statename][label] = key
-    """
-    for key in refined_f:
-        print key
-        for label in refined_f[key]:
-            print label, refined_f[key][label]
-    """
     trans = []
     for statename in refined_f:
         source = statename
@@ -478,8 +472,8 @@ def main():
     clean_P_A_AS = clean_deadstates(P_A_AS)
     clean_P_A_AS.show()
     print("-------------------Bns: rfa to fa----------------------")
-    #Bns_FA = rfa_to_fa(clean_P_A_AS)
-    #Bns_FA.show()
+    Bns_FA = rfa_to_fa(clean_P_A_AS)
+    Bns_FA.show()
 
 if __name__=='__main__':
 	main()
