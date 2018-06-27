@@ -48,7 +48,7 @@ Make sure the python version is 2.* (we test on python 2.7).
   * "name" stands for the name of RTA.
   * "s" is a list of state names.
   * "sigma" is the alphabet.
-  * "tran" is the list of transitions. A transition is in the form "id : [source, label, guard, target].
+  * "tran" is the list of transitions. A transition is in the form "id : [source, label, guard, target]. Make sure the guard is union of the finite intervals like "[2,4]U[5,7]U[1,1]" (we represent it in normal form). 
   * "init" stands the name of the init state
   * "accept" means the  list of the names of accept states.
   * "observable" is the list of observable actions. **MAKE SURE two models have the same one list** .
@@ -63,5 +63,18 @@ Make sure the python version is 2.* (we test on python 2.7).
 
   If the result is "**NOT!**", then it means RTA $\mathcal{A}$ is not language-opaque w.r.t $L(\mathcal{A}_{secret})$ and $\Sigma_{0}$.
 
+  * All intervals in the tool are represented in **Nomal Form** which comes from Dima's paper "Real-time Automata".
+
+
   * We may print final product automaton and its refined one.
   * We also print the total time in seconds.
+
+#### File introduction
+
+* a.json, a_secret.json : two model files
+* fa.py : some definitions and functions about finite automaton (FA) and refined finite automaton (RFA)
+* interval.py: some definitions and functions about constraint (interval).
+* normalform.py: definitions and functions about Normal Form of INT intervals
+* projection.py: functions about projection
+* rta.py: read the model file and store them in two RTAs
+* opacity.py: main
