@@ -34,20 +34,26 @@ class FA:
         self.initstate_name = initstate_name
         self.accept_names = accept_names
     def show(self):
+        print "FA name: "
         print self.name
+        print "timed alphabet: (in normalform)"
         for term in self.timed_alphabet:
             print term
             print
             for timedlabel in self.timed_alphabet[term]:
                 timedlabel.show()
                 print
+        print "State (name, init, accept)"
         for s in self.states:
             print s.name, s.init, s.accept
+        print "transitions: (id, source, target, timed label(in normalform)): "
         for t in self.trans:
             print t.id, t.source, t.target
             t.timedlabel.show()
             print
+        print "init state: "
         print self.initstate_name
+        print "accept states: "
         print self.accept_names    
 
 class RFATran:
@@ -67,15 +73,21 @@ class RFA:
         self.initstate_name = initstate_name
         self.accept_names = accept_names
     def show(self):
+        print "RFA name: "
         print self.name
+        print
+        print "timed alphabet: "
         for term in self.timed_alphabet:
             print term
             print
             for timedlabel in self.timed_alphabet[term]:
                 timedlabel.show()
                 print
+        print "State (name, init, accept): "
         for s in self.states:
             print s.name, s.init, s.accept
+        print
+        print "transitions (id, source, target, label, normalform index in timed alphabet): "
         for t in self.trans:
             print t.id, t.source, t.target
             print t.label, t.nfnums
@@ -83,7 +95,11 @@ class RFA:
                 self.timed_alphabet[t.label][nfnum].show()
                 print
             print
+        print
+        print "init state: "
         print self.initstate_name
+        print
+        print "accept states: "
         print self.accept_names    
 
 def rta_to_fa(rta, flag):
@@ -285,20 +301,25 @@ def clean_deadstates(rfa):
     for tran in cleanrfa.trans:
         if tran.source not in source_states:
             source_states.append(tran.source)
-    dead_states = []
+    dead_statesnames = []
+    live_states = []
     for s in cleanrfa.states:
-        if s.name not in source_states:
-            if s.accept == False:
-                dead_states.append(s)
-                cleanrfa.states.remove(s)
-    dead_statesname = [s.name for s in dead_states]
+        if (s.name not in source_states) and s.accept == False:
+            dead_statesnames.append(s.name)
+        else:
+            live_states.append(s)
+    cleanrfa.states = live_states
+    live_trans = []
     for tran in cleanrfa.trans:
-        if tran.target in dead_statesname:
-            cleanrfa.trans.remove(tran)
+        if (tran.target not in dead_statesnames) and (tran.source not in dead_statesnames):
+            live_trans.append(tran)
+    cleanrfa.trans = live_trans
     for tran, i in zip(cleanrfa.trans, range(0, len(cleanrfa.trans))):
         tran.id = i
+    if len(cleanrfa.states) == 0:
+        cleanrfa.initstate_name = ""
     if has_deadstates(cleanrfa) > 0:
-        clean_deadstates(cleanrfa)
+        return clean_deadstates(cleanrfa)
     else:
         return cleanrfa
 
@@ -457,8 +478,8 @@ def main():
     clean_P_A_AS = clean_deadstates(P_A_AS)
     clean_P_A_AS.show()
     print("-------------------Bns: rfa to fa----------------------")
-    Bns_FA = rfa_to_fa(clean_P_A_AS)
-    Bns_FA.show()
+    #Bns_FA = rfa_to_fa(clean_P_A_AS)
+    #Bns_FA.show()
 
 if __name__=='__main__':
 	main()

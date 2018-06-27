@@ -3,18 +3,7 @@
 import sys
 from projection import *
 
-def main():
-    para = sys.argv
-    file1 = str(para[1])
-    file2 = str(para[2])
-    #observable = ['a']
-    start = time.time()
-    print("---------------------" + file1 + "----------------")
-    A, observable = buildRTA(file1)
-    A.show()
-    print("-------------" + file2 + "-----------------")
-    AS, _ = buildRTA(file2)
-    AS.show()
+def language_opacity(A, AS, observable):
     #print("------------B : A to fa------------------------")
     A_FA = rta_to_fa(A, "generation")
     #print("-----------A_secret to FA-----------------------")
@@ -55,11 +44,39 @@ def main():
     C_PROJ_Bns_RFA_D = rfa_complement(PROJ_Bns_RFA_D)
     print("----------------------final FA-------------------------")
     product_final = rfa_product(PROJ_B_RFA_D, C_PROJ_Bns_RFA_D)
-    end = time.time()
     product_final.show()
+    #print "Total time: ", end - start
+    print("-----------------------cleaned final FA---------------------------")
+    cleaned_product_final = clean_deadstates(product_final)
+    cleaned_product_final.show()
+    
+    if len(cleaned_product_final.accept_names) == 0:
+        return True
+    else:
+        return False
+
+def main():
+    para = sys.argv
+    file1 = str(para[1])
+    file2 = str(para[2])
+    print("---------------------" + file1 + "----------------")
+    A, observable = buildRTA(file1)
+    A.show()
+    print("-------------" + file2 + "-----------------")
+    AS, _ = buildRTA(file2)
+    AS.show()
+    start = time.time()
+    language_opaque = language_opacity(A, AS, observable)
+    end = time.time()
+    print
+    print("*************************")
+    if language_opaque == True:
+        print "Language Opaque!"
+    else:
+        print "NOT!"
+    print("*************************")
+    print
     print "Total time: ", end - start
-    #cleaned_product_final = clean_deadstates(product_final)
-    #cleaned_product_final.show()
 
 if __name__=='__main__':
 	main()  

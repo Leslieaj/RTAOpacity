@@ -36,16 +36,21 @@ class RTA:
         self.accept_names = accept or []
     
     def show(self):
+        print "RTA name: "
         print self.name
+        print "sigma and length of sigma: "
         print self.sigma, len(self.sigma)
+        print "State (name, init, accept) :"
         for s in self.states:
             print s.name, s.init, s.accept
-        print
+        print "transitions (id, source_state, label, target_state, normalform guard): "
         for t in self.trans:
             print t.id, t.source, t.label, t.target
             t.nfc.show()
             print
+        print "init state: "
         print self.initstate_name
+        print "accept states: "
         print self.accept_names
 
 def buildRTA(jsonfile):
