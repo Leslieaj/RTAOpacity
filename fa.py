@@ -301,7 +301,32 @@ def clean_deadstates(rfa):
         clean_deadstates(cleanrfa)
     else:
         return cleanrfa
-    
+
+def rfa_to_fa(rfa):
+    name = rfa.name
+    states = copy.deepcopy(rfa.states)
+    timed_alphabet = {}
+    for term in rfa.timed_alphabet:
+        timed_alphabet[term] = []
+    trans = []
+    for tran in rfa.trans:
+        tran_id = tran.id
+        source = tran.source
+        target = tran.target
+        label = tran.label
+        nf = NForm([],[],1,1)
+        for i in tran.nfnums:
+            nf = nform_union(nf, rfa.timed_alphabet[label][i])
+        timedlabel = TimedLabel("", label, nf)
+        if timedlabel not in timed_alphabet[label]:
+            timed_alphabet[label].append(timedlabel)
+        new_tran = FATran(len(trans), source, target, timedlabel)
+        trans.append(new_tran)
+    initstate_name = rfa.initstate_name
+    accept_names = copy.deepcopy(rfa.accept_names)
+    fa = FA(name, timed_alphabet, states, trans, initstate_name, accept_names)
+    return fa
+
 def main():
     print("---------------------a.json----------------")
     A = buildRTA("a.json")
@@ -338,6 +363,9 @@ def main():
     print("-------------------clean rfa-----------------------")
     clean_P_A_AS = clean_deadstates(P_A_AS)
     clean_P_A_AS.show()
+    print("-------------------Bns: rfa to fa----------------------")
+    Bns_FA = rfa_to_fa(clean_P_A_AS)
+    Bns_FA.show()
 
 if __name__=='__main__':
 	main()
