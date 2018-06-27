@@ -74,11 +74,6 @@ def unobservable_intervals(btau):
                     RE[i][j] = nform_union(RE[i][j], tran.timedlabel.nfc)
     for i in range(0,n):
         RE[i][i] = nform_union(RE[i][i], zero_nf)
-    for i in range(0,n):
-        for j in range(0,n):
-            RE[i][j].show()
-            print
-    print("---------------------------------------------------")
     RE_new = copy.deepcopy(RE)
     for k in range(0, n):
         for i in range(0, n):
@@ -108,7 +103,6 @@ def unobservable_trans(btau, RE):
                     source_state = btau.states[i].name
                     target_state = btau.states[j].name
                     new_timedlabel = TimedLabel("", "Tau", RE[i][j])
-                    print RE[i][j].show()
                     new_tran = FATran(len(unobser_trans), source_state, target_state, new_timedlabel)
                     unobser_trans.append(new_tran)
     return unobser_trans
@@ -197,20 +191,29 @@ def main():
     print("-------------------clean rfa-----------------------")
     clean_P_A_AS = clean_deadstates(P_A_AS)
     #clean_P_A_AS.show()
-    print("-------------------BTau------------------------------")
+    print("-------------------Bns: rfa to fa----------------------")
+    Bns_FA = rfa_to_fa(clean_P_A_AS)
+    #Bns_FA.show()
+    print("-------------------B_Tau------------------------------")
     observable = ['a']
-    Btau = buildBTau(A_FA, observable)
-    Btau.show()
-    print("-------------------BTau unobservable_intervals------------------------------")
-    RE = unobservable_intervals(Btau)
-    n = len(Btau.states)
-    for i in range(0,n):
-        for j in range(0,n):
-            RE[i][j].show()
-            print
+    B_tau = buildBTau(A_FA, observable)
+    B_tau.show()
+    print("-------------------Bns_Tau------------------------------")
+    Bns_tau = buildBTau(Bns_FA, observable)
+    Bns_tau.show()
+    #print("-------------------B_Tau unobservable_intervals------------------------------")
+    #RE = unobservable_intervals(B_tau)
+    #n = len(Btau.states)
+    #for i in range(0,n):
+        #for j in range(0,n):
+            #RE[i][j].show()
+            #print
     print("---------------------projection B------------------------")
     projection_B = projection(A_FA, observable)
     projection_B.show()
+    print("---------------------projection Bns------------------------")
+    projection_Bns = projection(Bns_FA, observable)
+    projection_Bns.show()
 
 if __name__=='__main__':
 	main()   
