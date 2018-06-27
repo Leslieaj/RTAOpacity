@@ -422,10 +422,10 @@ def nfa_to_dfa(rfa):
 
 def main():
     print("---------------------a.json----------------")
-    A = buildRTA("a.json")
+    A,_ = buildRTA("a.json")
     A.show()
     print("-------------a_secret.json-----------------")
-    AS = buildRTA("a_secret.json")
+    AS,_ = buildRTA("a_secret.json")
     AS.show()
     print("------------A to fa------------------------")
     A_FA = rta_to_fa(A, "generation")

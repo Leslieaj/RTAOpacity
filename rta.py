@@ -56,6 +56,7 @@ def buildRTA(jsonfile):
     trans_set = data["tran"]
     initstate = data["init"].encode("utf-8")
     accept_list = [s.encode("utf-8") for s in data["accept"]]
+    observable = [label.encode("utf-8") for label in data["observable"]]
     S = [State(state) for state in states_list]
     for s in S:
         if s.name == initstate:
@@ -77,14 +78,14 @@ def buildRTA(jsonfile):
         nfc = union_intervals_to_nform(constraints_list)
         rta_tran = RTATran(tran_id, source, target, label, nfc)
         trans += [rta_tran]
-    return RTA(name, sigma, S, trans, initstate, accept_list)
+    return RTA(name, sigma, S, trans, initstate, accept_list), observable
 
 def main():
     print("---------------------a.json----------------")
-    A = buildRTA("a.json")
+    A,_ = buildRTA("a.json")
     A.show()
     print("-------------a_secret.json-----------------")
-    A_secret = buildRTA("a_secret.json")
+    A_secret,_ = buildRTA("a_secret.json")
     A_secret.show()
 
 if __name__=='__main__':

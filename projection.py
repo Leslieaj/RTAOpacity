@@ -157,10 +157,10 @@ def projection(fa, observable):
 
 def main():
     print("---------------------a.json----------------")
-    A = buildRTA("a.json")
+    A,_ = buildRTA("a.json")
     #A.show()
     print("-------------a_secret.json-----------------")
-    AS = buildRTA("a_secret.json")
+    AS,_ = buildRTA("a_secret.json")
     #AS.show()
     print("------------B : A to fa------------------------")
     A_FA = rta_to_fa(A, "generation")
