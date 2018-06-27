@@ -327,6 +327,99 @@ def rfa_to_fa(rfa):
     fa = FA(name, timed_alphabet, states, trans, initstate_name, accept_names)
     return fa
 
+def nfa_to_dfa(rfa):
+    name = rfa.name
+    #initstate_name = rfa.initstate_name
+    timed_alphabet = copy.deepcopy(rfa.timed_alphabet)
+    newstate_list = []
+    newstate_list.append([rfa.initstate_name])
+    final_newstate = copy.deepcopy(newstate_list)
+    f = {}
+    statename_value = {}
+    index = 0
+    while len(newstate_list) > 0:
+        temp_state = newstate_list.pop(0)
+        index = index + 1
+        state_name = str(index)
+        statename_value[state_name] = temp_state
+        f[state_name] = {}
+        for term in timed_alphabet:
+            for nf in timed_alphabet[term]:
+                i = timed_alphabet[term].index(nf)
+                f[state_name][term+'_'+str(i)] = []
+                label_targetlist = []
+                for tran in rfa.trans:
+                    if tran.source in temp_state and term == tran.label and i in tran.nfnums:
+                            label_targetlist.append(tran.target)
+                f[state_name][term+'_'+str(i)].extend(label_targetlist)
+                if label_targetlist not in final_newstate:
+                    if len(label_targetlist) > 0:
+                        newstate_list.append(label_targetlist)
+                        final_newstate.append(label_targetlist)
+    states = []
+    for statename in f:
+        init = False
+        accept = False
+        for sn in statename_value[statename]:
+            if sn == rfa.initstate_name:
+                init = True
+            if sn in rfa.accept_names:
+                accept = True
+        new_state = State(statename, init, accept)
+        states.append(new_state)
+
+    refined_f = copy.deepcopy(f)
+    for statename in refined_f:
+        for label in refined_f[statename]:
+            for key in statename_value:
+                if refined_f[statename][label] == statename_value[key]:
+                    refined_f[statename][label] = key
+    """
+    for key in refined_f:
+        print key
+        for label in refined_f[key]:
+            print label, refined_f[key][label]
+    """
+    trans = []
+    for statename in refined_f:
+        source = statename
+        target_label = {}
+        #label_target = {}
+        for label in refined_f[statename]:
+            #if not label_target.has_key(label):
+                #label_target[label] = []
+            if len(refined_f[statename][label]) > 0:
+                new_target = refined_f[statename][label]
+                if not target_label.has_key(new_target):
+                    target_label[new_target] = []
+                    target_label[new_target].append(label)
+                else:
+                    target_label[new_target].append(label)
+        for target in target_label:
+            labels = target_label[target]
+            label_nfnums = {}
+            for label_nfnum in labels:
+                label, nfnum = label_nfnum.split('_')
+                if not label_nfnums.has_key(label):
+                    label_nfnums[label] = []
+                    label_nfnums[label].append(int(nfnum))
+                else:
+                    label_nfnums[label].append(int(nfnum))
+            for label in label_nfnums:
+                nfnums = label_nfnums[label]
+                if len(nfnums) > 0:
+                    new_tran = RFATran(len(trans), source, target, label, nfnums)
+                    trans.append(new_tran)
+    initstate_name = ""
+    accept_names = []
+    for s in states:
+        if s.init == True:
+            initstate_name = s.name
+        if s.accept == True:
+            accept_names.append(s.name)
+    d_rfa = RFA(name, timed_alphabet, states, trans, initstate_name, accept_names)
+    return d_rfa
+
 def main():
     print("---------------------a.json----------------")
     A = buildRTA("a.json")
