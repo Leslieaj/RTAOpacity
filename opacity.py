@@ -4,8 +4,9 @@ import sys
 from projection import *
 
 def language_opacity(A, AS, observable):
-    #print("------------B : A to fa------------------------")
+    print("--------------B : A to fa------------------")
     A_FA = rta_to_fa(A, "generation")
+    A_FA.show()
     #print("-----------A_secret to FA-----------------------")
     AS_FA = rta_to_fa(AS, "receiving")
     #print("---------------------partitions-------------")
@@ -21,16 +22,19 @@ def language_opacity(A, AS, observable):
     P_A_AS = rfa_product(A_RFA, C_AS_RFA)
     #print("-------------------clean rfa-----------------------")
     clean_P_A_AS = clean_deadstates(P_A_AS)
-    #print("-------------------Bns: rfa to fa----------------------")
+    print("-------------------Bns----------------------")
     Bns_FA = rfa_to_fa(clean_P_A_AS)
+    Bns_FA.show()
     #print("-------------------B_Tau------------------------------")
     B_tau = buildBTau(A_FA, observable)
     #print("-------------------Bns_Tau------------------------------")
     Bns_tau = buildBTau(Bns_FA, observable)
-    #print("---------------------projection B------------------------")
+    print("---------------------projection B------------------------")
     projection_B = projection(A_FA, observable)
-    #print("---------------------projection Bns------------------------")
+    projection_B.show()
+    print("---------------------projection Bns------------------------")
     projection_Bns = projection(Bns_FA, observable)
+    projection_Bns.show()
     #print("---------------------projection_B_RFA: fa to rfa")
     combined_alphabet1 = alphabet_combine(projection_B.timed_alphabet, projection_Bns.timed_alphabet)
     alphapartitions1 = alphabet_partitions(combined_alphabet1)
@@ -71,9 +75,9 @@ def main():
     print
     print("*************************")
     if language_opaque == True:
-        print "Language Opaque!"
+        print "Language Opaque: True!"
     else:
-        print "NOT!"
+        print "Language Opaque: False!"
     print("*************************")
     print
     print "Total time: ", end - start
