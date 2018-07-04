@@ -18,7 +18,7 @@ At second, it is natural to obtain $\mathcal{B}|_{\Sigma_{0}}$ and $\mathcal{B}_
 
 Finally, we apply the complement and product operations on them again, and obtain $\mathcal{B}|_{\Sigma_{0}} \times (\mathcal{B}_{ns}|_{\Sigma_{0}})^{comp}$. Clearly, $\mathcal{A}$ is language-opaque w.r.t. $\mathcal{A}_{secret}$ and $\Sigma_{0}$ if and only if $L_{f}{(\mathcal{B}|_{\Sigma_{0}} \times (\mathcal{B}_{ns}|_{\Sigma_{0}})^{comp})}$ is empty.
 
-####Using guide
+#### using guide
 
 We test it on Linux (Ubuntu 16.04 64bit), but it is a pure python program.
 
@@ -59,9 +59,9 @@ Make sure the python version is 2.* (we test on python 2.7).
   python opacity.py a.json a_secret.json
   ```
 
-  If the result is "**Language Opaque!** ", then it means RTA $\mathcal{A}$ is language-opaque w.r.t $L(\mathcal{A}_{secret})$ and $\Sigma_{0}$.
+  If the result is "**Language Opaque : True!**", then it means RTA $\mathcal{A}$ is language-opaque w.r.t $L(\mathcal{A}_{secret})$ and $\Sigma_{0}$.
 
-  If the result is "**NOT!**", then it means RTA $\mathcal{A}$ is not language-opaque w.r.t $L(\mathcal{A}_{secret})$ and $\Sigma_{0}$.
+  If the result is "**Language Opaque : False!**", then it means RTA $\mathcal{A}$ is not language-opaque w.r.t $L(\mathcal{A}_{secret})$ and $\Sigma_{0}$.
 
   * All intervals in the tool are represented in **Nomal Form** which comes from Dima's paper "Real-time Automata".
 
