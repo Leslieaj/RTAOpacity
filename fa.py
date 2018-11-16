@@ -188,12 +188,14 @@ def rfa_complement(rfa):
             s.accept = False
         else:
             s.accept = True
+            accept_names.append(s.name)
     timed_alphabet = copy.deepcopy(rfa.timed_alphabet)
     new_state = State(str(states_num+1), False, True)
     states.append(new_state)
     accept_names.append(new_state.name)
     sigma = [term for term in rfa.timed_alphabet]
     trans = copy.deepcopy(rfa.trans)
+    need_newstate = False
     for s in states:
         nfnums_need = {}
         nfnums_exist = {}
@@ -213,15 +215,24 @@ def rfa_complement(rfa):
             if len(nfnums_need[term]) > 0:
                 tran_id = len(trans)
                 source = s.name
+                if source != new_state.name:
+                    need_newstate = True
                 target = new_state.name
                 label = term
                 nfnums = nfnums_need[term]
                 new_tran = RFATran(tran_id, source, target, label, nfnums)
                 trans.append(new_tran)
-    if len(trans) == len(rfa.trans):
+    new_trans = [tran for tran in trans]
+    if need_newstate == False:
         states.remove(new_state)
+        for tran in trans:
+            if tran.source == new_state.name:
+                new_trans.remove(tran)
         accept_names.remove(new_state.name)
-    comp_rfa = RFA(name, timed_alphabet, states, trans, initstate_name, accept_names)
+    #if len(trans) == len(rfa.trans):
+        #states.remove(new_state)
+        #accept_names.remove(new_state.name)
+    comp_rfa = RFA(name, timed_alphabet, states, new_trans, initstate_name, accept_names)
     return comp_rfa
 
 def rfa_product(rfa1, rfa2):
